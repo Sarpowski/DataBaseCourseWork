@@ -1,5 +1,4 @@
 # DataBaseCourseWork
-Automated Dean's Office System
 
 
 Automated Dean's Office System
