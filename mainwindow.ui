@@ -48,10 +48,10 @@ QGroupBox::title {
     <property name="title">
      <string>Login</string>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>90</x>
        <y>70</y>
        <width>111</width>
        <height>131</height>
@@ -65,6 +65,7 @@ QGroupBox::title {
           <property name="font">
            <font>
             <pointsize>14</pointsize>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -73,7 +74,11 @@ QGroupBox::title {
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEditUsername"/>
+         <widget class="QLineEdit" name="lineEditUsername">
+          <property name="placeholderText">
+           <string/>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -84,6 +89,7 @@ QGroupBox::title {
           <property name="font">
            <font>
             <pointsize>14</pointsize>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -101,6 +107,41 @@ QGroupBox::title {
        </layout>
       </item>
      </layout>
+    </widget>
+    <widget class="QPushButton" name="pushButtonLogin">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>210</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 8px 16px; /* Padding for a larger button */
+}
+
+QPushButton:hover {
+    background-color: #45A049; /* Darker green on hover */
+}
+
+QPushButton:pressed {
+    background-color: #388E3C; /* Even darker green when pressed */
+}</string>
+     </property>
+     <property name="text">
+      <string>Login</string>
+     </property>
     </widget>
    </widget>
   </widget>
