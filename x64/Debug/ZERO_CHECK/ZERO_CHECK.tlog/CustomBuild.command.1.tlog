@@ -1,0 +1,10 @@
+^C:\USERS\CAN\DESKTOP\DATABASECOURSEWORK\COURSEWORKDB\CMAKEFILES\116477D06EDA4125EC4693A8A6C1F997\GENERATE.STAMP.RULE
+setlocal
+C:\Users\Can\devTools\cmake-3.30.2-windows-x86_64\bin\cmake.exe -SC:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB -BC:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/CourseWorkDB.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

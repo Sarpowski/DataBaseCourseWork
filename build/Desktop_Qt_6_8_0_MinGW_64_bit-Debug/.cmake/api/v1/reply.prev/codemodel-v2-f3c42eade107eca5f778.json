@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-2be429c4b17189689845.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "CourseWorkDB",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "CourseWorkDB::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-CourseWorkDB-Debug-85f0740264af3a82db46.json",
+					"name" : "CourseWorkDB",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "CourseWorkDB_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-CourseWorkDB_autogen-Debug-ab4c05e9c34f82ef93b5.json",
+					"name" : "CourseWorkDB_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "CourseWorkDB_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-CourseWorkDB_autogen_timestamp_deps-Debug-a554b8e018ece8cf31fc.json",
+					"name" : "CourseWorkDB_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug",
+		"source" : "C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

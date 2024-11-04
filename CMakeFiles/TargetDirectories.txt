@@ -1,0 +1,4 @@
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/CMakeFiles/CourseWorkDB.dir
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/CMakeFiles/INSTALL.dir
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/CMakeFiles/ALL_BUILD.dir
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/CMakeFiles/ZERO_CHECK.dir
