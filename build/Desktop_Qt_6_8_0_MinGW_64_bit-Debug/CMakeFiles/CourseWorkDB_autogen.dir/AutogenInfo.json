@@ -296,6 +296,12 @@
 	"HEADERS" : 
 	[
 		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.h",
+			"MU",
+			"EWIEGA46WW/moc_mainapplication.cpp",
+			null
+		],
+		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -378,6 +384,11 @@
 	[
 		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/main.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.cpp",
 			"MU",
 			null
 		],

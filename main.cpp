@@ -1,3 +1,4 @@
+#include "mainapplication.h"
 #include "mainwindow.h"
 
 #include <QApplication>
@@ -16,9 +17,15 @@ void connectToDatabase();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    //Login Screen
+    //MainWindow w;
+    //w.show();
 
-    w.show();
+    //Application Screen
+    mainApplication *mainWindow = new mainApplication;
+    mainWindow->show();
+
+    //DataBase Test
     connectToDatabase();
     return a.exec();
 }
