@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+
+
+
 namespace Ui {
 class mainApplication;
 }

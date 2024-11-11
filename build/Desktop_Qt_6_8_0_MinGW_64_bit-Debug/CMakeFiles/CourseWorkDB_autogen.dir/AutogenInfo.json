@@ -306,6 +306,12 @@
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
 			null
+		],
+		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h",
+			"MU",
+			"EWIEGA46WW/moc_modeldb.cpp",
+			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -394,6 +400,11 @@
 		],
 		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.cpp",
 			"MU",
 			null
 		]

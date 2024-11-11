@@ -7,6 +7,10 @@
 #include <QSqlError>
 #include <QDebug>
 
+#include <QComboBox>
+
+#include "modeldb.h"
+
 mainApplication::mainApplication(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::mainApplication)
@@ -14,21 +18,22 @@ mainApplication::mainApplication(QWidget *parent)
     ui->setupUi(this);
 
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-    db.setHostName("localhost");
-    db.setPort(5432);
-    db.setDatabaseName("sarp"); // Ensure this matches the database you created
-    db.setUserName("sarp"); // Your PostgreSQL username
-    db.setPassword("password"); // Your PostgreSQL password
+    // QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+    // db.setHostName("localhost");
+    // db.setPort(5432);
+    // db.setDatabaseName("sarp"); // Ensure this matches the database you created
+    // db.setUserName("sarp"); // Your PostgreSQL username
+    // db.setPassword("password"); // Your PostgreSQL password
 
-    if (!db.open()) {
-        qDebug() << "Error: Unable to connect to the database!" << db.lastError().text();
-    } else {
-        qDebug() << "Database connection successful!";
-    }
-
+    // if (!db.open()) {
+    //     qDebug() << "Error: Unable to connect to the database!" << db.lastError().text();
+    // } else {
+    //     qDebug() << "Database connection successful!";
+    // }
+    modeldb& db =modeldb::getInstance();
+    db.initDb();
     // Modeli ayarla
-    QSqlTableModel *model = new QSqlTableModel(this, db);
+    QSqlTableModel *model = new QSqlTableModel(this, db.getDatabase());
     model->setTable("people"); // Veritabanındaki tablo adını kullan
     model->select(); // Verileri modele çek
 
@@ -50,6 +55,10 @@ mainApplication::mainApplication(QWidget *parent)
 
 
 }
+void InitdataBase(){
+
+}
+
 
 mainApplication::~mainApplication()
 {

@@ -77,7 +77,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 68,
+				"line" : 70,
 				"parent" : 0
 			},
 			{
@@ -89,13 +89,13 @@
 			{
 				"command" : 6,
 				"file" : 1,
-				"line" : 57,
+				"line" : 59,
 				"parent" : 0
 			},
 			{
 				"command" : 6,
 				"file" : 1,
-				"line" : 59,
+				"line" : 61,
 				"parent" : 0
 			},
 			{
@@ -397,7 +397,8 @@
 			[
 				0,
 				1,
-				2
+				2,
+				6
 			]
 		}
 	],
@@ -535,7 +536,8 @@
 			[
 				0,
 				1,
-				2
+				2,
+				6
 			]
 		},
 		{
@@ -543,7 +545,9 @@
 			"sourceIndexes" : 
 			[
 				3,
-				5
+				5,
+				8,
+				9
 			]
 		},
 		{
@@ -551,14 +555,15 @@
 			"sourceIndexes" : 
 			[
 				4,
-				6
+				7,
+				10
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				7
+				11
 			]
 		}
 	],
@@ -594,9 +599,31 @@
 			"sourceGroupIndex" : 2
 		},
 		{
+			"backtrace" : 4,
+			"path" : "mainapplication.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "mainapplication.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"path" : "mainapplication.ui",
+			"sourceGroupIndex" : 2
+		},
+		{
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/include/ui_mainwindow.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/include/ui_mainapplication.h",
 			"sourceGroupIndex" : 1
 		},
 		{

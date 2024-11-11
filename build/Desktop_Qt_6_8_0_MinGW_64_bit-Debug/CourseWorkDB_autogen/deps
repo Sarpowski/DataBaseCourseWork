@@ -565,6 +565,8 @@ CourseWorkDB_autogen/timestamp: \
 	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.h \
 	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.cpp \
 	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h \
+	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.cpp \
+	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h \
 	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.ui \
 	C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.ui \
 	C:/Qt/Tools/CMake_64/bin/cmake.exe

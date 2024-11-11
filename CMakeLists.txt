@@ -35,6 +35,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         mainapplication.h mainapplication.cpp mainapplication.ui
+        modeldb.h modeldb.cpp
+
 
 
     )
