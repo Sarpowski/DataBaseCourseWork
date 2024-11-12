@@ -1,10 +1,12 @@
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/EWIEGA46WW/moc_mainapplication.cpp: C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.h \
   C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/moc_predefs.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/QDebug \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20iterator.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20memory.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20type_traits.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q23utility.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/qabstractitemmodel.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qalgorithms.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qanystringview.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qarraydata.h \
@@ -57,6 +59,7 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtCore/qmargins.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qmath.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qmetacontainer.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/qmetaobject.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qmetatype.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qminmax.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qnamespace.h \
@@ -145,6 +148,18 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtGui/qtransform.h \
   C:/Qt/6.8.0/mingw_64/include/QtGui/qwindowdefs.h \
   C:/Qt/6.8.0/mingw_64/include/QtGui/qwindowdefs_win.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/QSqlDatabase \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/QSqlError \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/QSqlQuery \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/QSqlTableModel \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qsqldatabase.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qsqlerror.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qsqlquery.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qsqlquerymodel.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qsqltablemodel.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qtsql-config.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qtsqlexports.h \
+  C:/Qt/6.8.0/mingw_64/include/QtSql/qtsqlglobal.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/QWidget \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qsizepolicy.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qtwidgets-config.h \
@@ -356,4 +371,5 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/sys/types.h \
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/time.h \
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/vadefs.h \
-  C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h
+  C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h \
+  C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h

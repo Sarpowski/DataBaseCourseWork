@@ -1,6 +1,8 @@
 #ifndef MAINAPPLICATION_H
 #define MAINAPPLICATION_H
 
+#include "modeldb.h"
+
 #include <QWidget>
 
 
@@ -17,6 +19,7 @@ class mainApplication : public QWidget
 public:
     explicit mainApplication(QWidget *parent = nullptr);
     ~mainApplication();
+    void initMainAppTableView(modeldb& db);
 
 private slots:
     void on_pushButtonLoadTable_clicked();
