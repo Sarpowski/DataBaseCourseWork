@@ -9,7 +9,9 @@
 #include <QSqlError>
 #include <QDebug>
 
-
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QRegularExpression>
 #include <QComboBox>
 #include <QCheckBox>
 #include <qmessagebox.h>
@@ -32,7 +34,7 @@ mainApplication::mainApplication(QWidget *parent)
     groupBoxGroupSelect();
     checkBoxFilter();
     editTab();
-
+    connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->pushButton_addStudent, &QPushButton::clicked, this, &mainApplication::on_pushButton_addStudent_clicked);
     //Connections
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
@@ -342,5 +344,35 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
 
     // Optionally, refresh the list of students to reflect the deletion
     initMainAppTableView(db);
+}
+
+
+void mainApplication::pushButton_AddGroup()
+{
+    bool ok;
+    QString groupName = QInputDialog::getText(this, tr("Add Group"),
+                                              tr("Enter Group Name (Format: 3084/1_2024):"), QLineEdit::Normal,
+                                              "", &ok);
+
+    if (ok && !groupName.isEmpty()) {
+        // Check if the group name matches the required format using regex
+        QRegularExpression regex("^[0-9]{4}/[0-9]_[0-9]{4}$");
+        if (!regex.match(groupName).hasMatch()) {
+            QMessageBox::warning(this, tr("Invalid Format"), tr("Please enter the group name in the correct format (e.g., 3084/1_2024)."));
+            return;
+        }
+
+        // Insert the group into the database using a prepared statement
+        QSqlQuery query;
+        query.prepare("INSERT INTO groups (name) VALUES (:groupName)");
+        query.bindValue(":groupName", groupName);
+
+        if (query.exec()) {
+            QMessageBox::information(this, tr("Success"), tr("Group added successfully."));
+        } else {
+            qDebug() << "Failed to add group:" << query.lastError().text();
+            QMessageBox::warning(this, tr("Error"), tr("Failed to add group: %1").arg(query.lastError().text()));
+        }
+    }
 }
 

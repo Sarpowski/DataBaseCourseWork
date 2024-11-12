@@ -37,6 +37,8 @@ private slots:
 
     void on_pushButton_StudentDelete_clicked();
 
+    void pushButton_AddGroup();
+
 private:
     Ui::mainApplication *ui;
     void editStudent();
