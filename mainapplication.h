@@ -20,6 +20,9 @@ public:
     explicit mainApplication(QWidget *parent = nullptr);
     ~mainApplication();
     void initMainAppTableView(modeldb& db);
+    void checkBoxFilter();
+    void groupBoxGroupSelect();
+
 
 private slots:
     void on_pushButtonLoadTable_clicked();
