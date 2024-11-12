@@ -22,13 +22,25 @@ public:
     void initMainAppTableView(modeldb& db);
     void checkBoxFilter();
     void groupBoxGroupSelect();
+    void editTab();
+    void loadGroups();
+    void addStudent();
 
 
 private slots:
     void on_pushButtonLoadTable_clicked();
 
+
+
+
+    void on_pushButton_addStudent_clicked();
+
+    void on_pushButton_StudentDelete_clicked();
+
 private:
     Ui::mainApplication *ui;
+    void editStudent();
+     QSqlDatabase db;
 };
 
 #endif // MAINAPPLICATION_H
