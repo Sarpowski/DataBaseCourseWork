@@ -17,9 +17,10 @@ void connectToDatabase();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     //Login Screen
-    //MainWindow w;
-    //w.show();
+   // MainWindow w;
+   // w.show();
 
     //Application Screen
     mainApplication *mainWindow = new mainApplication;
@@ -30,14 +31,13 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 void connectToDatabase() {
-    // Create a database object
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
     db.setPort(5432);
-    db.setDatabaseName("sarp"); // Ensure this matches the database you created
-    db.setUserName("sarp"); // Your PostgreSQL username
-    db.setPassword("password"); // Your PostgreSQL password
+    db.setDatabaseName("sarp");
+    db.setUserName("sarp");
+    db.setPassword("password");
 
     if (!db.open()) {
         qDebug() << "Error: Unable to connect to the database!" << db.lastError().text();

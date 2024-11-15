@@ -33,11 +33,12 @@ private slots:
 
 
 
-    void on_pushButton_addStudent_clicked();
 
     void on_pushButton_StudentDelete_clicked();
 
     void pushButton_AddGroup();
+
+    void on_pushButton_TESTadd_clicked();
 
 private:
     Ui::mainApplication *ui;

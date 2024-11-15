@@ -21,7 +21,7 @@
      </property>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>Tab 1</string>
+       <string>People And Groups</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
@@ -103,7 +103,7 @@
                    <item>
                     <widget class="QPushButton" name="MA_pushButton">
                      <property name="text">
-                      <string>PushButton</string>
+                      <string> Search</string>
                      </property>
                     </widget>
                    </item>
@@ -203,7 +203,7 @@
                  <item row="1" column="0" colspan="2">
                   <layout class="QHBoxLayout" name="horizontalLayout_3">
                    <item>
-                    <widget class="QPushButton" name="pushButton_addStudent">
+                    <widget class="QPushButton" name="pushButton_TESTadd">
                      <property name="text">
                       <string>add</string>
                      </property>
@@ -244,8 +244,75 @@
      </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
-       <string>Tab 2</string>
+       <string>Marks</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QTabWidget" name="tabWidget_2">
+         <widget class="QWidget" name="tab_7">
+          <attribute name="title">
+           <string>Tab 1</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="tab_8">
+          <attribute name="title">
+           <string>Tab 2</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_6">
+      <attribute name="title">
+       <string>Tools</string>
+      </attribute>
+      <widget class="QWidget" name="">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>140</y>
+         <width>85</width>
+         <height>90</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QComboBox" name="comboBox_ExportData">
+          <item>
+           <property name="text">
+            <string>students</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>staff</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_ExportData">
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </item>

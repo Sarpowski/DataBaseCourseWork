@@ -34,12 +34,16 @@ mainApplication::mainApplication(QWidget *parent)
     groupBoxGroupSelect();
     checkBoxFilter();
     editTab();
-    connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
-    connect(ui->pushButton_addStudent, &QPushButton::clicked, this, &mainApplication::on_pushButton_addStudent_clicked);
+
     //Connections
+
+    connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
-    connect(ui->MA_checkBox_Student, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
-    connect(ui->MA_checkBox_Teacher, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
+    // connect(ui->MA_checkBox_Student, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
+    // connect(ui->MA_checkBox_Teacher, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
+    connect(ui->MA_checkBox_Student, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
+    connect(ui->MA_checkBox_Teacher, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
+
 }
 
 
@@ -55,7 +59,6 @@ void mainApplication::initMainAppTableView(modeldb& db)
     model->setTable("people");
     model->select();
 
-    // İsteğe bağlı: Sütun başlıklarını değiştirebilirsiniz
     model->setHeaderData(0, Qt::Horizontal, "Student id");
     model->setHeaderData(1, Qt::Horizontal, "Name");
     model->setHeaderData(2, Qt::Horizontal, "Surname");
@@ -63,7 +66,6 @@ void mainApplication::initMainAppTableView(modeldb& db)
     model->setHeaderData(4, Qt::Horizontal, "Groupd Id");
     model->setHeaderData(5, Qt::Horizontal, "Type S/P");
 
-    // QTableView ile modeli bağla
 
     ui->MainAppTableView->setModel(model);
     ui->MainAppTableView->resizeColumnsToContents();
@@ -75,11 +77,9 @@ void mainApplication::initMainAppTableView(modeldb& db)
 void mainApplication::on_pushButtonLoadTable_clicked()
 {
 
-    // Get the selected group name from the combo box
     QString selectedGroup = ui->MA_comboBox_group->currentText();
 
     if (selectedGroup == "Select a group") {
-        // If placeholder text is selected, show all data
         QSqlTableModel *model = static_cast<QSqlTableModel *>(ui->MainAppTableView->model());
         if (model) {
             model->setFilter(""); // Show all data
@@ -88,11 +88,9 @@ void mainApplication::on_pushButtonLoadTable_clicked()
         return;
     }
 
-    // Cast the model to QSqlTableModel
     QSqlTableModel *model = static_cast<QSqlTableModel *>(ui->MainAppTableView->model());
 
     if (model) {
-        // Set the filter to only show rows matching the selected group
         model->setFilter(QString("group_id = (SELECT id FROM groups WHERE name = '%1')").arg(selectedGroup));
 
         if (!model->select()) {
@@ -108,7 +106,6 @@ void mainApplication::on_pushButtonLoadTable_clicked()
 
 void mainApplication::checkBoxFilter()
 {
-    // Get the model from the QTableView
     QSqlTableModel *model = static_cast<QSqlTableModel *>(ui->MainAppTableView->model());
 
     if (!model) {
@@ -119,7 +116,6 @@ void mainApplication::checkBoxFilter()
     // Construct the filter string based on checkbox states
     QStringList filterParts;
 
-    // Filtering by group if a valid group is selected
     QString selectedGroup = ui->MA_comboBox_group->currentText();
     if (selectedGroup != "Select a group") {
         filterParts << QString("group_id = (SELECT id FROM groups WHERE name = '%1')").arg(selectedGroup);
@@ -135,8 +131,7 @@ void mainApplication::checkBoxFilter()
     } else if (!isStudentChecked && isTeacherChecked) {
         filterParts << "type = 'P'";
     } else if (!isStudentChecked && !isTeacherChecked) {
-        // If neither checkbox is checked, show no results
-        filterParts << "1 = 0";  // Ensures that no rows are returned
+        filterParts << "1 = 0";
     }
 
     // Combine all filter parts
@@ -154,10 +149,9 @@ void mainApplication::groupBoxGroupSelect()
     modeldb& db = modeldb::getInstance();
     ui->MA_comboBox_SelectGroup->clear();
 
-    //Select Group ComboBox
-    ui->MA_comboBox_SelectGroup->addItem("Select a group"); // Add placeholder item
+    ui->MA_comboBox_SelectGroup->addItem("Select a group");
 
-    ui->MA_comboBox_group->addItem("Select a group"); // Add placeholder item
+    ui->MA_comboBox_group->addItem("Select a group");
     QSqlQuery queryGroup(db.getDatabase());
 
 
@@ -208,13 +202,12 @@ void mainApplication::editStudent()
 
 
 
-
+//fix this shit
 void mainApplication::addStudent() {
 
 
 
-    qDebug() << "addStudent called";  // Log entry for function call
-
+    qDebug() << "addStudent called";
     QString name = ui->MA_lineEdit_EditName->text();
     QString surname = ui->MA_lineEdit_EditSurname->text();
     QString fatherName = ui->MA_lineEdit_EditFatherName->text();
@@ -227,7 +220,6 @@ void mainApplication::addStudent() {
 
     modeldb& db = modeldb::getInstance();
 
-    // Retrieve the group ID based on the group name
     QSqlQuery groupQuery(db.getDatabase());
     groupQuery.prepare("SELECT id FROM groups WHERE name = :group_name");
     groupQuery.bindValue(":group_name", groupName);
@@ -262,12 +254,6 @@ void mainApplication::addStudent() {
 
 
 }
-void mainApplication::on_pushButton_addStudent_clicked()
-{
-    addStudent();
-
-
-}
 
 
 void mainApplication::on_pushButton_StudentDelete_clicked()
@@ -279,7 +265,6 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
     QString fatherName = ui->MA_lineEdit_EditFatherName->text().trimmed();
     QString groupName = ui->MA_comboBox_SelectGroup->currentText().trimmed();
 
-    // Check if all fields are filled and that a valid group is selected
     if (firstName.isEmpty() || lastName.isEmpty() || fatherName.isEmpty() || groupName.isEmpty()) {
         QMessageBox::warning(this, "Input Error", "All fields must be filled, and a valid group must be selected to delete a student.");
         return;
@@ -336,13 +321,11 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
 
     QMessageBox::information(this, "Success", "Student deleted successfully.");
 
-    // Reset the input fields
     ui->MA_lineEdit_EditName->clear();
     ui->MA_lineEdit_EditSurname->clear();
     ui->MA_lineEdit_EditFatherName->clear();
     ui->MA_comboBox_SelectGroup->setCurrentIndex(-1);
 
-    // Optionally, refresh the list of students to reflect the deletion
     initMainAppTableView(db);
 }
 
@@ -355,14 +338,12 @@ void mainApplication::pushButton_AddGroup()
                                               "", &ok);
 
     if (ok && !groupName.isEmpty()) {
-        // Check if the group name matches the required format using regex
         QRegularExpression regex("^[0-9]{4}/[0-9]_[0-9]{4}$");
         if (!regex.match(groupName).hasMatch()) {
             QMessageBox::warning(this, tr("Invalid Format"), tr("Please enter the group name in the correct format (e.g., 3084/1_2024)."));
             return;
         }
 
-        // Insert the group into the database using a prepared statement
         QSqlQuery query;
         query.prepare("INSERT INTO groups (name) VALUES (:groupName)");
         query.bindValue(":groupName", groupName);
@@ -374,5 +355,11 @@ void mainApplication::pushButton_AddGroup()
             QMessageBox::warning(this, tr("Error"), tr("Failed to add group: %1").arg(query.lastError().text()));
         }
     }
+}
+
+
+void mainApplication::on_pushButton_TESTadd_clicked()
+{
+    addStudent();
 }
 
