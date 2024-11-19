@@ -145,25 +145,6 @@ void mainApplication::checkBoxFilter()
 
 void mainApplication::groupBoxGroupSelect()
 {
-    // modeldb& db = modeldb::getInstance();
-    // ui->MA_comboBox_SelectGroup->clear();
-
-    // ui->MA_comboBox_SelectGroup->addItem("Select a group");
-
-    // ui->MA_comboBox_group->addItem("Select a group");
-    // QSqlQuery queryGroup(db.getDatabase());
-
-
-    // if (queryGroup.exec("SELECT name FROM groups")) {
-    //     while (queryGroup.next()) {
-    //         QString groupName = queryGroup.value(0).toString();
-    //         ui->MA_comboBox_group->addItem(groupName);
-    //         ui->MA_comboBox_SelectGroup->addItem(groupName);
-    //     }
-
-    // } else {
-    //     qDebug() << "Failed to retrieve group names:" << queryGroup.lastError().text();
-    // }
 
     modeldb& db = modeldb::getInstance();
 
@@ -204,17 +185,7 @@ void mainApplication::loadGroups()
     }
 }
 
-// //TODO
-// void mainApplication::editStudent()
-// {
-//     ui->MA_lineEdit_EditName->setPlaceholderText("Name");
-//     ui->MA_lineEdit_EditSurname->setPlaceholderText("Surname");
-//     ui->MA_lineEdit_EditFatherName->setPlaceholderText("Father Name");
-//     ui->MA_comboBox_EditStudent->setPlaceholderText("choose student");
-//     ui->MA_comboBox_SelectGroup->setPlaceholderText("Select a group");
-//   //  ui->pushButtonStudentEdit->setText("Edit");
-//  //   ui->pushButton_StudentAdd->setText("Add");
-//  //   ui->pushButton_StudentDelete->setText("Delete");
+
 
 
 // }
@@ -252,7 +223,6 @@ void mainApplication::addStudent() {
     int groupId = groupQuery.value(0).toInt();
     qDebug() << "Group ID for selected group:" << groupId;
 
-    // Proceed with the insertion if no duplicate is found
     QSqlQuery query(db.getDatabase());
     query.prepare("INSERT INTO people (first_name, last_name, father_name, group_id, type) "
                   "VALUES (:name, :surname, :father_name, :group_id, 'S')");
@@ -287,7 +257,6 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
         return;
     }
 
-    // Retrieve group ID
     QSqlQuery groupQuery(db.getDatabase());
     groupQuery.prepare("SELECT id FROM groups WHERE name = :groupName");
     groupQuery.bindValue(":groupName", groupName);
@@ -301,7 +270,6 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
         return;
     }
 
-    // Check if the student exists
     QSqlQuery checkQuery(db.getDatabase());
     checkQuery.prepare("SELECT 1 FROM people WHERE first_name = :firstName AND last_name = :lastName AND father_name = :fatherName AND group_id = :groupId");
     checkQuery.bindValue(":firstName", firstName);
@@ -322,7 +290,6 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
         return;
     }
 
-    // Delete the student
     QSqlQuery deleteQuery(db.getDatabase());
     deleteQuery.prepare("DELETE FROM people WHERE first_name = :firstName AND last_name = :lastName AND father_name = :fatherName AND group_id = :groupId");
     deleteQuery.bindValue(":firstName", firstName);
