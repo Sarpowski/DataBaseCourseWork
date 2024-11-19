@@ -53,7 +53,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 34,
+				"line" : 42,
 				"parent" : 0
 			},
 			{
@@ -77,7 +77,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 71,
+				"line" : 80,
 				"parent" : 0
 			},
 			{
@@ -89,13 +89,13 @@
 			{
 				"command" : 6,
 				"file" : 1,
-				"line" : 60,
+				"line" : 69,
 				"parent" : 0
 			},
 			{
 				"command" : 6,
 				"file" : 1,
-				"line" : 62,
+				"line" : 71,
 				"parent" : 0
 			},
 			{
@@ -406,11 +406,11 @@
 	"dependencies" : 
 	[
 		{
-			"id" : "CourseWorkDB_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 0,
 			"id" : "CourseWorkDB_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
+			"id" : "CourseWorkDB_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "CourseWorkDB::@6890427a1f51a3e7e1df",
@@ -549,8 +549,8 @@
 				3,
 				5,
 				8,
-				10,
-				11
+				11,
+				12
 			]
 		},
 		{
@@ -559,14 +559,15 @@
 			[
 				4,
 				7,
-				12
+				10,
+				13
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				13
+				14
 			]
 		}
 	],
@@ -609,7 +610,7 @@
 		{
 			"backtrace" : 4,
 			"compileGroupIndex" : 0,
-			"path" : "mainapplication.cpp",
+			"path" : "src/mainapplication.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -627,6 +628,11 @@
 			"compileGroupIndex" : 0,
 			"path" : "modeldb.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"path" : "src/CMakeLists.txt",
+			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 0,

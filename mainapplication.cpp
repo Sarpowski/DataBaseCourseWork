@@ -36,11 +36,8 @@ mainApplication::mainApplication(QWidget *parent)
     editTab();
 
     //Connections
-
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
-    // connect(ui->MA_checkBox_Student, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
-    // connect(ui->MA_checkBox_Teacher, &QCheckBox::stateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->MA_checkBox_Student, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->MA_checkBox_Teacher, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
 
@@ -146,22 +143,45 @@ void mainApplication::checkBoxFilter()
 
 void mainApplication::groupBoxGroupSelect()
 {
+    // modeldb& db = modeldb::getInstance();
+    // ui->MA_comboBox_SelectGroup->clear();
+
+    // ui->MA_comboBox_SelectGroup->addItem("Select a group");
+
+    // ui->MA_comboBox_group->addItem("Select a group");
+    // QSqlQuery queryGroup(db.getDatabase());
+
+
+    // if (queryGroup.exec("SELECT name FROM groups")) {
+    //     while (queryGroup.next()) {
+    //         QString groupName = queryGroup.value(0).toString();
+    //         ui->MA_comboBox_group->addItem(groupName);
+    //         ui->MA_comboBox_SelectGroup->addItem(groupName);
+    //     }
+
+    // } else {
+    //     qDebug() << "Failed to retrieve group names:" << queryGroup.lastError().text();
+    // }
+
     modeldb& db = modeldb::getInstance();
+
+    // Clear existing items
     ui->MA_comboBox_SelectGroup->clear();
+    ui->MA_comboBox_group->clear();
 
+    // Add default item
     ui->MA_comboBox_SelectGroup->addItem("Select a group");
-
     ui->MA_comboBox_group->addItem("Select a group");
+
     QSqlQuery queryGroup(db.getDatabase());
 
-
+    // Fetch group names from the database
     if (queryGroup.exec("SELECT name FROM groups")) {
         while (queryGroup.next()) {
             QString groupName = queryGroup.value(0).toString();
             ui->MA_comboBox_group->addItem(groupName);
             ui->MA_comboBox_SelectGroup->addItem(groupName);
         }
-
     } else {
         qDebug() << "Failed to retrieve group names:" << queryGroup.lastError().text();
     }
@@ -185,7 +205,7 @@ void mainApplication::loadGroups()
     }
 }
 
-
+//TODO
 void mainApplication::editStudent()
 {
     ui->MA_lineEdit_EditName->setPlaceholderText("Name");
@@ -249,9 +269,7 @@ void mainApplication::addStudent() {
         QMessageBox::information(this, "Success", "Student added successfully.");
     }
 
-
-
-
+    groupBoxGroupSelect();
 
 }
 
@@ -327,7 +345,87 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
     ui->MA_comboBox_SelectGroup->setCurrentIndex(-1);
 
     initMainAppTableView(db);
+    groupBoxGroupSelect();
+
 }
+
+
+
+
+
+//DOPE
+void mainApplication::on_pushButton_TESTadd_clicked()
+{
+    addStudent();
+
+}
+
+
+void mainApplication::on_pushButton_DeleteGroup_clicked()
+{
+    modeldb& db = modeldb::getInstance();
+
+
+    // Prompt user to enter the group name
+    bool ok;
+    QString groupName = QInputDialog::getText(this, "Delete Group",
+                                              "Enter the group name to delete:",
+                                              QLineEdit::Normal, "", &ok);
+
+    if (groupName.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "All fields must be filled, and a valid group must be selected to delete a student.");
+        return;
+    }
+
+    // Retrieve group ID
+    QSqlQuery groupQuery(db.getDatabase());
+    groupQuery.prepare("SELECT id FROM groups WHERE name = :groupName");
+    groupQuery.bindValue(":groupName", groupName);
+
+    int groupId = 0;
+    if (groupQuery.exec() && groupQuery.next()) {
+        groupId = groupQuery.value(0).toInt();
+    } else {
+        qDebug() << "Failed to retrieve group id:" << groupQuery.lastError().text();
+        QMessageBox::warning(this, "Error", "Invalid group selected.");
+        return;
+    }
+
+    // Check if the student exists
+    QSqlQuery checkQuery(db.getDatabase());
+    checkQuery.prepare("SELECT delete_group_and_students(:group_name);");
+    // Confirm deletion
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete Confirmation", "Are you sure you want to delete this group?",
+                                  QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) {
+        return;
+    }
+    checkQuery.bindValue(":group_name", groupName);
+
+    if (!checkQuery.exec() || !checkQuery.next()) {
+        QMessageBox::warning(this, "Error", "group not found.");
+        return;
+    }
+    groupBoxGroupSelect();
+
+
+
+    // Delete the student
+    QSqlQuery deleteQuery(db.getDatabase());
+    deleteQuery.prepare("SELECT delete_group_and_students(:group_name);");
+    deleteQuery.bindValue(":group_name", groupName);
+    if (!deleteQuery.exec()) {
+        // qDebug() << "Failed to delete group:" << deleteQuery.lastError().text();
+        // QMessageBox::warning(this, "Database Error", "Failed to delete group.");
+        return;
+    }
+
+
+    QMessageBox::information(this, "Success", "Group deleted successfully.");
+}
+
+
 
 
 void mainApplication::pushButton_AddGroup()
@@ -338,12 +436,14 @@ void mainApplication::pushButton_AddGroup()
                                               "", &ok);
 
     if (ok && !groupName.isEmpty()) {
+        // Check if the group name matches the required format using regex
         QRegularExpression regex("^[0-9]{4}/[0-9]_[0-9]{4}$");
         if (!regex.match(groupName).hasMatch()) {
             QMessageBox::warning(this, tr("Invalid Format"), tr("Please enter the group name in the correct format (e.g., 3084/1_2024)."));
             return;
         }
 
+        // Insert the group into the database using a prepared statement
         QSqlQuery query;
         query.prepare("INSERT INTO groups (name) VALUES (:groupName)");
         query.bindValue(":groupName", groupName);
@@ -355,11 +455,6 @@ void mainApplication::pushButton_AddGroup()
             QMessageBox::warning(this, tr("Error"), tr("Failed to add group: %1").arg(query.lastError().text()));
         }
     }
+    groupBoxGroupSelect();
+
 }
-
-
-void mainApplication::on_pushButton_TESTadd_clicked()
-{
-    addStudent();
-}
-

@@ -26,7 +26,6 @@ public:
     void loadGroups();
     void addStudent();
 
-
 private slots:
     void on_pushButtonLoadTable_clicked();
 
@@ -39,6 +38,8 @@ private slots:
     void pushButton_AddGroup();
 
     void on_pushButton_TESTadd_clicked();
+
+    void on_pushButton_DeleteGroup_clicked();
 
 private:
     Ui::mainApplication *ui;

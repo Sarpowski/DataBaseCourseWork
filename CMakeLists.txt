@@ -28,7 +28,15 @@ set(PROJECT_SOURCES
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    mainapplication.h
+    mainapplication.cpp
+    mainapplication.ui
+    modeldb.h
+    modeldb.cpp
+
 )
+
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(CourseWorkDB
