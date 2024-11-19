@@ -28,6 +28,7 @@ public:
     void addStudent();
     void editStudent();
     void loadTeacherName();
+    void loadSubject();
 
 
 
@@ -50,6 +51,14 @@ private slots:
     void on_pushButton_DeleteTeacher_clicked();
 
     void on_pushButton_EditTeacher_clicked();
+
+    void on_pushButton_SubjectAdd_clicked();
+
+    void on_pushButton_SubjectDelete_clicked();
+
+    void on_pushButton_SubjectEdit_clicked();
+
+    void on_pushButton_AssignTeacher_clicked();
 
 private:
     bool firstRun_ ;

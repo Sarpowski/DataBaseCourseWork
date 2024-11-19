@@ -36,6 +36,9 @@ mainApplication::mainApplication(QWidget *parent)
     checkBoxFilter();
     loadStudentNames();
     loadTeacherName();
+    loadSubject();
+
+    ui->comboBox_Subject->setMinimumSize(200, 30);
 
     //Connections
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
@@ -348,6 +351,33 @@ void mainApplication::loadTeacherName()
         QMessageBox::warning(this, "Database Error", "Failed to load student names: " + query.lastError().text());
     }
 }
+
+void mainApplication::loadSubject()
+{
+    modeldb& db = modeldb::getInstance();
+
+    // Clear the combo box before populating
+    ui->comboBox_Subject->clear();
+
+    // Add a default "Select a Subject" item
+    ui->comboBox_Subject->addItem("Select a Subject");
+
+    // Query to fetch subject names and IDs
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, name FROM subjects;");
+
+    if (query.exec()) {
+        while (query.next()) {
+            QString subjectId = query.value(0).toString();  // ID of the subject
+            QString subjectName = query.value(1).toString(); // Name of the subject
+            // Add subject ID and name to the combo box
+            ui->comboBox_Subject->addItem(subjectName, subjectId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load subjects: " + query.lastError().text());
+    }
+}
+
 
 
 
@@ -696,3 +726,190 @@ void mainApplication::on_pushButton_EditTeacher_clicked()
     ui->lineEdit_TfatherName->clear();
     ui->comboBox_TeacherSelect->setCurrentText("Select a Teacher");
 }
+
+void mainApplication::on_pushButton_SubjectAdd_clicked()
+{
+    bool ok;
+    QString subject = QInputDialog::getText(this, "Add Subject",
+                                              "Enter the subject name to enter:",
+                                              QLineEdit::Normal, "", &ok);
+
+    if (subject.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "All fields must be filled.");
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+
+
+
+    \
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("INSERT INTO subjects (name) VALUES (:subjectName)");
+    query.bindValue(":subjectName", subject);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Subject added successfully.");
+
+
+        loadSubject();
+
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to update Subject: " + query.lastError().text());
+    }
+
+}
+void mainApplication::on_pushButton_SubjectDelete_clicked()
+{
+    int currentIndex = ui->comboBox_Subject->currentIndex();
+    if (currentIndex <= 0) { // İlk öğe "Select a Subject" için
+        QMessageBox::warning(this, "Input Error", "Please select a valid subject to delete.");
+        return;
+    }
+
+    QVariant subjectId = ui->comboBox_Subject->currentData();
+    if (!subjectId.isValid()) {
+        QMessageBox::warning(this, "Selection Error", "Could not retrieve the selected subject.");
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+    QSqlQuery query(db.getDatabase());
+
+    query.prepare("DELETE FROM subjects WHERE id = :subjectId");
+    query.bindValue(":subjectId", subjectId);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Subject deleted successfully.");
+        loadSubject();
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to delete the subject: " + query.lastError().text());
+    }
+}
+
+void mainApplication::on_pushButton_SubjectEdit_clicked()
+{
+    int currentIndex = ui->comboBox_Subject->currentIndex();
+    if (currentIndex <= 0) {
+        QMessageBox::warning(this, "Input Error", "Please select a valid subject to delete.");
+        return;
+    }
+
+    QVariant subjectId = ui->comboBox_Subject->currentData();
+    if (!subjectId.isValid()) {
+        QMessageBox::warning(this, "Selection Error", "Could not retrieve the selected subject.");
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+    QSqlQuery query(db.getDatabase());
+
+
+    bool ok;
+    QString newSubjectName = QInputDialog::getText(this, "Delete Group",
+                                            "Enter the subject name to enter:",
+                                            QLineEdit::Normal, "", &ok);
+
+    if (newSubjectName.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "All fields must be filled.");
+        return;
+    }
+
+
+    query.prepare("UPDATE subjects SET name = :newName WHERE id = :subjectId");
+    query.bindValue(":newName", newSubjectName.trimmed());
+    query.bindValue(":subjectId", subjectId);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Subject added successfully.");
+
+
+        loadSubject();
+
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to update Subject: " + query.lastError().text());
+    }
+}
+
+
+void mainApplication::on_pushButton_AssignTeacher_clicked()
+{
+    // Get the selected subject ID from the combo box
+    int subjectIndex = ui->comboBox_Subject->currentIndex();
+    if (subjectIndex <= 0) { // First item is "Select a Subject"
+        QMessageBox::warning(this, "Input Error", "Please select a valid subject.");
+        return;
+    }
+
+    QVariant subjectId = ui->comboBox_Subject->currentData();
+    if (!subjectId.isValid()) {
+        QMessageBox::warning(this, "Selection Error", "Could not retrieve the selected subject.");
+        return;
+    }
+
+    // Fetch available teachers from the database
+    modeldb& db = modeldb::getInstance();
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, first_name || ' ' || last_name AS full_name FROM people WHERE type = 'P'");
+
+    QStringList teacherList;
+    QList<QVariant> teacherIds;
+
+    if (query.exec()) {
+        while (query.next()) {
+            teacherIds.append(query.value(0));               // Store teacher ID
+            teacherList.append(query.value(1).toString());  // Store teacher name
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch teachers: " + query.lastError().text());
+        return;
+    }
+
+    // Ensure there are teachers available
+    if (teacherList.isEmpty()) {
+        QMessageBox::information(this, "No Teachers", "There are no teachers available to assign.");
+        return;
+    }
+
+    // Display a pop-up combo box (QInputDialog)
+    bool ok;
+    QString selectedTeacher = QInputDialog::getItem(this, "Select Teacher",
+                                                    "Choose a teacher to assign to the subject:",
+                                                    teacherList, 0, false, &ok);
+
+    if (!ok || selectedTeacher.isEmpty()) {
+        QMessageBox::information(this, "Cancelled", "No teacher was selected.");
+        return;
+    }
+
+    // Find the selected teacher's ID
+    int selectedIndex = teacherList.indexOf(selectedTeacher);
+    QVariant teacherId = teacherIds[selectedIndex];
+
+    // Confirm assignment
+    QString subjectName = ui->comboBox_Subject->currentText();
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm Assignment",
+                                  QString("Are you sure you want to assign '%1' to '%2'?")
+                                      .arg(selectedTeacher, subjectName),
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::No) {
+        return;
+    }
+
+    // Assign the teacher to the subject
+    QSqlQuery updateQuery(db.getDatabase());
+    updateQuery.prepare("UPDATE subjects SET teacher_id = :teacherId WHERE id = :subjectId");
+    updateQuery.bindValue(":teacherId", teacherId);
+    updateQuery.bindValue(":subjectId", subjectId);
+
+    if (updateQuery.exec()) {
+        QMessageBox::information(this, "Success", "Teacher successfully assigned to the subject.");
+        loadSubject(); // Refresh the subjects
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to assign teacher to subject: " + updateQuery.lastError().text());
+    }
+}
+
