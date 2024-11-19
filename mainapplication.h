@@ -22,7 +22,7 @@ public:
     void initMainAppTableView(modeldb& db);
     void checkBoxFilter();
     void groupBoxGroupSelect();
-    void editTab();
+
     void loadGroups();
     void loadStudentNames();
     void addStudent();
@@ -42,6 +42,7 @@ private slots:
     void on_pushButton_DeleteGroup_clicked();
 
 private:
+    bool firstRun_ ;
     Ui::mainApplication *ui;
      QSqlDatabase db;
 };

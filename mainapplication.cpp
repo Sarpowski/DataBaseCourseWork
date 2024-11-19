@@ -21,11 +21,12 @@
 mainApplication::mainApplication(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::mainApplication)
+
 {
     ui->setupUi(this);
 
 
-
+    firstRun_ = true;
 
     modeldb& db = modeldb::getInstance();
     db.initDb();
@@ -33,15 +34,14 @@ mainApplication::mainApplication(QWidget *parent)
     initMainAppTableView(db);
     groupBoxGroupSelect();
     checkBoxFilter();
-    editTab();
     loadStudentNames();
+
+
     //Connections
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
     connect(ui->MA_checkBox_Student, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->MA_checkBox_Teacher, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
-
-
     connect(ui->pushButtonStudentEdit, &QPushButton::clicked, this, &mainApplication::editStudent);
 }
 
@@ -189,10 +189,7 @@ void mainApplication::groupBoxGroupSelect()
     }
 }
 
-void mainApplication::editTab()
-{
-    editStudent();
-}
+
 
 void mainApplication::loadGroups()
 {
@@ -489,8 +486,8 @@ void mainApplication::editStudent() {
 
     // Get selected student ID from the combo box
     QString studentId = ui->MA_comboBox_EditStudent->currentData().toString();
-    if (studentId.isEmpty() || studentId == "Select a student") {
-        QMessageBox::warning(this, "Input Error", "Please select a valid student.");
+    if (studentId.isEmpty() || studentId == "Select a student"  ) {
+        QMessageBox::warning(this, "Input Error", "Please select a valid student EDIT part.");
         return;
     }
 
@@ -552,5 +549,6 @@ void mainApplication::editStudent() {
     ui->MA_lineEdit_EditSurname->clear();
     ui->MA_lineEdit_EditFatherName->clear();
     ui->MA_comboBox_SelectGroup->setCurrentText("Select a group");
+    firstRun_=false;
 }
 
