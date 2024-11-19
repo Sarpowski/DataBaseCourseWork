@@ -128,40 +128,196 @@
              <attribute name="title">
               <string>Edit</string>
              </attribute>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
               <item>
-               <widget class="QGroupBox" name="MA_groupBoxEdit_group">
-                <property name="title">
-                 <string>Group Managment</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <item row="0" column="0">
-                  <widget class="QComboBox" name="comboBox"/>
-                 </item>
-                 <item row="1" column="0">
-                  <layout class="QVBoxLayout" name="verticalLayout_7">
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_5">
-                     <item>
-                      <widget class="QPushButton" name="pushButton_AddGroup">
-                       <property name="text">
-                        <string>Add Group</string>
-                       </property>
-                      </widget>
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <item>
+                   <widget class="QGroupBox" name="MA_groupBoxEdit_group">
+                    <property name="title">
+                     <string>Group Managment</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_3">
+                     <item row="0" column="0">
+                      <widget class="QComboBox" name="comboBox"/>
                      </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_DeleteGroup">
-                       <property name="text">
-                        <string>Delete Group</string>
-                       </property>
-                      </widget>
+                     <item row="1" column="0">
+                      <layout class="QVBoxLayout" name="verticalLayout_7">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_5">
+                         <item>
+                          <widget class="QPushButton" name="pushButton_AddGroup">
+                           <property name="text">
+                            <string>Add Group</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_DeleteGroup">
+                           <property name="text">
+                            <string>Delete Group</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_6">
+                         <item>
+                          <spacer name="horizontalSpacer">
+                           <property name="orientation">
+                            <enum>Qt::Orientation::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton">
+                           <property name="text">
+                            <string>Edit Group</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_3">
+                           <property name="orientation">
+                            <enum>Qt::Orientation::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_2">
+                    <property name="title">
+                     <string>Teacher</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_8">
                      <item>
-                      <spacer name="horizontalSpacer">
+                      <layout class="QVBoxLayout" name="verticalLayout_6">
+                       <item>
+                        <widget class="QLineEdit" name="lineEdit_Tname"/>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="lineEdit_Tsurname"/>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="lineEdit_TfatherName"/>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBox_TeacherSelect"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_10">
+                       <item>
+                        <widget class="QPushButton" name="pushButton_AddTeacher">
+                         <property name="text">
+                          <string>Add</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_DeleteTeacher">
+                         <property name="text">
+                          <string>Delete</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_EditTeacher">
+                         <property name="text">
+                          <string>Edit</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <item>
+                   <widget class="QGroupBox" name="MA_groupBoxEdit_Student">
+                    <property name="title">
+                     <string>Student Managment</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_2">
+                     <item row="1" column="0" colspan="2">
+                      <layout class="QHBoxLayout" name="horizontalLayout_3">
+                       <item>
+                        <widget class="QPushButton" name="pushButton_TESTadd">
+                         <property name="text">
+                          <string>Add</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_StudentDelete">
+                         <property name="text">
+                          <string>Delete</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButtonStudentEdit">
+                         <property name="text">
+                          <string>Edit</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QVBoxLayout" name="verticalLayout_2">
+                       <item>
+                        <layout class="QVBoxLayout" name="verticalLayout">
+                         <item>
+                          <widget class="QLineEdit" name="MA_lineEdit_EditName"/>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="MA_lineEdit_EditSurname"/>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="MA_lineEdit_EditFatherName"/>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="MA_comboBox_SelectGroup"/>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="MA_comboBox_EditStudent"/>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="2">
+                      <spacer name="horizontalSpacer_2">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -173,112 +329,63 @@
                        </property>
                       </spacer>
                      </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton">
-                       <property name="text">
-                        <string>Edit Group</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_3">
-                       <property name="orientation">
-                        <enum>Qt::Orientation::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
                     </layout>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTableView" name="tableView_2"/>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="MA_groupBoxEdit_Student">
-                <property name="title">
-                 <string>Student Managment</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_2">
-                 <item row="0" column="1">
-                  <layout class="QVBoxLayout" name="verticalLayout_2">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout">
-                     <item>
-                      <widget class="QLineEdit" name="MA_lineEdit_EditName"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="MA_lineEdit_EditSurname"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="MA_lineEdit_EditFatherName"/>
-                     </item>
-                     <item>
-                      <widget class="QComboBox" name="MA_comboBox_SelectGroup"/>
-                     </item>
-                     <item>
-                      <widget class="QComboBox" name="MA_comboBox_EditStudent"/>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="0" column="2">
-                  <spacer name="horizontalSpacer_2">
-                   <property name="orientation">
-                    <enum>Qt::Orientation::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="1" column="0" colspan="2">
-                  <layout class="QHBoxLayout" name="horizontalLayout_3">
-                   <item>
-                    <widget class="QPushButton" name="pushButton_TESTadd">
-                     <property name="text">
-                      <string>add</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_StudentDelete">
-                     <property name="text">
-                      <string>delete</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButtonStudentEdit">
-                     <property name="text">
-                      <string>edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
             <widget class="QWidget" name="tab_3">
              <attribute name="title">
-              <string>Graphics</string>
+              <string>Subject</string>
              </attribute>
+             <widget class="QWidget" name="gridLayoutWidget">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>20</y>
+                <width>661</width>
+                <height>291</height>
+               </rect>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="0" column="0">
+                <widget class="QGroupBox" name="groupBox">
+                 <property name="title">
+                  <string>GroupBox</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_2">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_3">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_4">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </widget>
           </item>

@@ -27,6 +27,10 @@ public:
     void loadStudentNames();
     void addStudent();
     void editStudent();
+    void loadTeacherName();
+
+
+
 
 private slots:
 
@@ -40,6 +44,12 @@ private slots:
     void on_pushButton_TESTadd_clicked();
 
     void on_pushButton_DeleteGroup_clicked();
+
+    void on_pushButton_AddTeacher_clicked();
+
+    void on_pushButton_DeleteTeacher_clicked();
+
+    void on_pushButton_EditTeacher_clicked();
 
 private:
     bool firstRun_ ;
