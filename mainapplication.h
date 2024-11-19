@@ -24,14 +24,14 @@ public:
     void groupBoxGroupSelect();
     void editTab();
     void loadGroups();
+    void loadStudentNames();
     void addStudent();
+    void editStudent();
 
 private slots:
+
+
     void on_pushButtonLoadTable_clicked();
-
-
-
-
 
     void on_pushButton_StudentDelete_clicked();
 
@@ -43,7 +43,6 @@ private slots:
 
 private:
     Ui::mainApplication *ui;
-    void editStudent();
      QSqlDatabase db;
 };
 

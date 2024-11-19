@@ -34,13 +34,15 @@ mainApplication::mainApplication(QWidget *parent)
     groupBoxGroupSelect();
     checkBoxFilter();
     editTab();
-
+    loadStudentNames();
     //Connections
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
     connect(ui->MA_checkBox_Student, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->MA_checkBox_Teacher, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
 
+
+    connect(ui->pushButtonStudentEdit, &QPushButton::clicked, this, &mainApplication::editStudent);
 }
 
 
@@ -205,20 +207,20 @@ void mainApplication::loadGroups()
     }
 }
 
-//TODO
-void mainApplication::editStudent()
-{
-    ui->MA_lineEdit_EditName->setPlaceholderText("Name");
-    ui->MA_lineEdit_EditSurname->setPlaceholderText("Surname");
-    ui->MA_lineEdit_EditFatherName->setPlaceholderText("Father Name");
-    ui->MA_comboBox_EditStudent->setPlaceholderText("choose student");
-    ui->MA_comboBox_SelectGroup->setPlaceholderText("Select a group");
-  //  ui->pushButtonStudentEdit->setText("Edit");
- //   ui->pushButton_StudentAdd->setText("Add");
- //   ui->pushButton_StudentDelete->setText("Delete");
+// //TODO
+// void mainApplication::editStudent()
+// {
+//     ui->MA_lineEdit_EditName->setPlaceholderText("Name");
+//     ui->MA_lineEdit_EditSurname->setPlaceholderText("Surname");
+//     ui->MA_lineEdit_EditFatherName->setPlaceholderText("Father Name");
+//     ui->MA_comboBox_EditStudent->setPlaceholderText("choose student");
+//     ui->MA_comboBox_SelectGroup->setPlaceholderText("Select a group");
+//   //  ui->pushButtonStudentEdit->setText("Edit");
+//  //   ui->pushButton_StudentAdd->setText("Add");
+//  //   ui->pushButton_StudentDelete->setText("Delete");
 
 
-}
+// }
 
 
 
@@ -350,9 +352,6 @@ void mainApplication::on_pushButton_StudentDelete_clicked()
 }
 
 
-
-
-
 //DOPE
 void mainApplication::on_pushButton_TESTadd_clicked()
 {
@@ -458,3 +457,100 @@ void mainApplication::pushButton_AddGroup()
     groupBoxGroupSelect();
 
 }
+
+void mainApplication::loadStudentNames() {
+    modeldb& db = modeldb::getInstance();
+
+    // Clear the combo box before populating
+    ui->MA_comboBox_EditStudent->clear();
+
+    // Add a default "Select a student" item
+    ui->MA_comboBox_EditStudent->addItem("Select a student");
+
+    // Query to fetch student names and IDs
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, first_name, last_name FROM people WHERE type = 'S' ORDER BY first_name");
+
+    if (query.exec()) {
+        while (query.next()) {
+            QString studentId = query.value(0).toString();
+            QString studentName = query.value(1).toString() + " " + query.value(2).toString();
+            // Add student ID and name to the combo box
+            ui->MA_comboBox_EditStudent->addItem(studentName, studentId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load student names: " + query.lastError().text());
+    }
+}
+
+
+void mainApplication::editStudent() {
+    modeldb& db = modeldb::getInstance();
+
+    // Get selected student ID from the combo box
+    QString studentId = ui->MA_comboBox_EditStudent->currentData().toString();
+    if (studentId.isEmpty() || studentId == "Select a student") {
+        QMessageBox::warning(this, "Input Error", "Please select a valid student.");
+        return;
+    }
+
+    // Fetch the selected group name and get the corresponding group ID
+    QString groupName = ui->MA_comboBox_SelectGroup->currentText();
+    int groupId = 0;
+
+    QSqlQuery groupQuery(db.getDatabase());
+    groupQuery.prepare("SELECT id FROM groups WHERE name = :group_name");
+    groupQuery.bindValue(":group_name", groupName);
+
+    if (groupQuery.exec() && groupQuery.next()) {
+        groupId = groupQuery.value(0).toInt();
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to find the selected group: " + groupQuery.lastError().text());
+        return;
+    }
+
+    // Fetch the edited details
+    QString firstName = ui->MA_lineEdit_EditName->text().trimmed();
+    QString lastName = ui->MA_lineEdit_EditSurname->text().trimmed();
+    QString fatherName = ui->MA_lineEdit_EditFatherName->text().trimmed();
+
+    // Validate inputs
+    if (firstName.isEmpty() || lastName.isEmpty() || fatherName.isEmpty() || groupId == 0) {
+        QMessageBox::warning(this, "Input Error", "All fields must be filled out.");
+        return;
+    }
+
+    // Update the database
+    QSqlQuery query(db.getDatabase());
+    query.prepare("UPDATE people SET first_name = :first_name, last_name = :last_name, "
+                  "father_name = :father_name, group_id = :group_id WHERE id = :student_id");
+    query.bindValue(":first_name", firstName);
+    query.bindValue(":last_name", lastName);
+    query.bindValue(":father_name", fatherName);
+    query.bindValue(":group_id", groupId);
+    query.bindValue(":student_id", studentId);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Student details updated successfully.");
+
+        // Refresh the combo box to reflect the updated student details
+        loadStudentNames();
+
+        // Reselect the updated student in the combo box
+        for (int i = 0; i < ui->MA_comboBox_EditStudent->count(); ++i) {
+            if (ui->MA_comboBox_EditStudent->itemData(i).toString() == studentId) {
+                ui->MA_comboBox_EditStudent->setCurrentIndex(i);
+                break;
+            }
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to update student details: " + query.lastError().text());
+    }
+
+    // Clear the input fields
+    ui->MA_lineEdit_EditName->clear();
+    ui->MA_lineEdit_EditSurname->clear();
+    ui->MA_lineEdit_EditFatherName->clear();
+    ui->MA_comboBox_SelectGroup->setCurrentText("Select a group");
+}
+
