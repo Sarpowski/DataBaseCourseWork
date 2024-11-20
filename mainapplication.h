@@ -29,7 +29,7 @@ public:
     void editStudent();
     void loadTeacherName();
     void loadSubject();
-    void loadGrades();
+
     void loadSubjectsWithTeachers();
 
 
@@ -59,11 +59,6 @@ private slots:
     void on_pushButton_SubjectEdit_clicked();
 
     void on_pushButton_AssignTeacher_clicked();
-
-    void on_pushButton_AssignGroup_clicked();
-
-
-    void on_pushButton_ViewGrades_clicked();
 
 private:
     bool firstRun_ ;
