@@ -38,9 +38,7 @@ mainApplication::mainApplication(QWidget *parent)
     loadStudentNames();
     loadTeacherName();
     loadSubject();
-
     ui->comboBox_Subject->setMinimumSize(200, 30);
-
     //Connections
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
@@ -376,6 +374,58 @@ void mainApplication::loadSubject()
         }
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to load subjects: " + query.lastError().text());
+    }
+}
+void mainApplication::loadGrades()
+{
+    modeldb& db = modeldb::getInstance();
+
+    // Create a QSqlQueryModel for fetching data
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+
+    // Prepare the SQL query to fetch grades
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT m.id AS Grade_ID, "
+                  "       p.first_name || ' ' || p.last_name AS Student, "
+                  "       g.name AS Group_Name, "
+                  "       s.name AS Subject, "
+                  "       COALESCE(m.value::TEXT, 'No Grade') AS Grade, "
+                  "       TO_CHAR(m.created_at, 'YYYY-MM-DD HH24:MI') AS Assigned_At "
+                  "FROM marks m "
+                  "LEFT JOIN people p ON m.student_id = p.id "
+                  "LEFT JOIN groups g ON p.group_id = g.id "
+                  "LEFT JOIN subjects s ON m.subject_id = s.id "
+                  "ORDER BY m.created_at DESC");
+
+    // Execute the query
+    if (!query.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to load grades: " + query.lastError().text());
+        return;
+    }
+
+    // Set the query result to the model
+    model->setQuery(query);
+
+    // Set headers for the columns
+    model->setHeaderData(0, Qt::Horizontal, "Grade ID");
+    model->setHeaderData(1, Qt::Horizontal, "Student");
+    model->setHeaderData(2, Qt::Horizontal, "Group Name");
+    model->setHeaderData(3, Qt::Horizontal, "Subject");
+    model->setHeaderData(4, Qt::Horizontal, "Grade");
+    model->setHeaderData(5, Qt::Horizontal, "Assigned At");
+
+    // Assign the model to the QTableView
+    ui->tableViewSubject->setModel(model);
+
+    // Resize columns to fit their contents
+    ui->tableViewSubject->resizeColumnsToContents();
+
+    // Optional: Stretch the last column to fill the available space
+    ui->tableViewSubject->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // Debugging: Check if the query executed successfully
+    if (query.lastError().isValid()) {
+        qDebug() << "Query execution error:" << query.lastError().text();
     }
 }
 
@@ -960,5 +1010,185 @@ void mainApplication::loadSubjectsWithTeachers()
     if (query.lastError().isValid()) {
         qDebug() << "Query execution error:" << query.lastError().text();
     }
+}
+
+// void mainApplication::on_pushButton_AssignGroup_clicked()
+// {
+//     modeldb& db = modeldb::getInstance();
+
+
+//     QSqlQuery query(db.getDatabase());
+//     ui->comboBox_Subject->clear();
+//     if (query.exec("SELECT name FROM groups")) {
+//         while (query.next()) {
+//             ui->comboBox_Subject->addItem(query.value(0).toString());
+//         }
+//     } else {
+//         qDebug() << "Failed to load groups:" << query.lastError().text();
+//     }
+
+//     // Get selected group name
+//     QString groupName = ui->comboBox_Subject->currentText();
+//     qDebug() << "Selected group name:" << groupName;
+
+//     if (groupName.isEmpty() || groupName == "Select a Group") {
+//         QMessageBox::warning(this, "Input Error", "Please select a valid group.");
+//         return;
+//     }
+
+//     // Fetch group ID
+//     QSqlQuery groupQuery(db.getDatabase());
+//     groupQuery.prepare("SELECT id FROM groups WHERE name = :groupName");
+//     groupQuery.bindValue(":groupName", groupName);
+
+//     if (!groupQuery.exec()) {
+//         QMessageBox::warning(this, "Database Error", "Failed to execute query: " + groupQuery.lastError().text());
+//         return;
+//     }
+
+//     if (!groupQuery.next()) {
+//         QMessageBox::warning(this, "Input Error", "Group not found. Please check the selected group name.");
+//         return;
+//     }
+
+//     int groupId = groupQuery.value(0).toInt();
+//     qDebug() << "Group ID:" << groupId;
+
+//     // Continue with assigning the subject to students in this group
+//     // ...
+// }
+
+
+void mainApplication::on_pushButton_AssignGroup_clicked()
+{
+    modeldb& db = modeldb::getInstance();
+
+    // Fetch available groups from the database
+    QSqlQuery groupQuery(db.getDatabase());
+    groupQuery.prepare("SELECT id, name FROM groups");
+
+    QStringList groupList;
+    QList<QVariant> groupIds;
+
+    if (groupQuery.exec()) {
+        while (groupQuery.next()) {
+            groupIds.append(groupQuery.value(0));               // Store group ID
+            groupList.append(groupQuery.value(1).toString());  // Store group name
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch groups: " + groupQuery.lastError().text());
+        return;
+    }
+
+    // Ensure there are groups available
+    if (groupList.isEmpty()) {
+        QMessageBox::information(this, "No Groups", "There are no groups available.");
+        return;
+    }
+
+    // Display a pop-up combo box (QInputDialog) to select a group
+    bool ok;
+    QString selectedGroup = QInputDialog::getItem(this, "Select Group",
+                                                  "Choose a group to assign a subject:",
+                                                  groupList, 0, false, &ok);
+
+    if (!ok || selectedGroup.isEmpty()) {
+        QMessageBox::information(this, "Cancelled", "No group was selected.");
+        return;
+    }
+
+    // Find the selected group's ID
+    int selectedGroupIndex = groupList.indexOf(selectedGroup);
+    QVariant groupId = groupIds[selectedGroupIndex];
+
+    // Fetch available subjects from the database
+    QSqlQuery subjectQuery(db.getDatabase());
+    subjectQuery.prepare("SELECT id, name FROM subjects");
+
+    QStringList subjectList;
+    QList<QVariant> subjectIds;
+
+    if (subjectQuery.exec()) {
+        while (subjectQuery.next()) {
+            subjectIds.append(subjectQuery.value(0));               // Store subject ID
+            subjectList.append(subjectQuery.value(1).toString());  // Store subject name
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch subjects: " + subjectQuery.lastError().text());
+        return;
+    }
+
+    // Ensure there are subjects available
+    if (subjectList.isEmpty()) {
+        QMessageBox::information(this, "No Subjects", "There are no subjects available.");
+        return;
+    }
+
+    // Display a pop-up combo box (QInputDialog) to select a subject
+    QString selectedSubject = QInputDialog::getItem(this, "Select Subject",
+                                                    "Choose a subject to assign to the group:",
+                                                    subjectList, 0, false, &ok);
+
+    if (!ok || selectedSubject.isEmpty()) {
+        QMessageBox::information(this, "Cancelled", "No subject was selected.");
+        return;
+    }
+
+    // Find the selected subject's ID
+    int selectedSubjectIndex = subjectList.indexOf(selectedSubject);
+    QVariant subjectId = subjectIds[selectedSubjectIndex];
+
+    // Fetch all students in the selected group
+    QSqlQuery studentQuery(db.getDatabase());
+    studentQuery.prepare("SELECT id FROM people WHERE group_id = :groupId AND type = 'S'");
+    studentQuery.bindValue(":groupId", groupId);
+
+    if (!studentQuery.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch students: " + studentQuery.lastError().text());
+        return;
+    }
+
+    // Assign the selected subject to all students in the group
+    QSqlQuery assignQuery(db.getDatabase());
+    int assignedCount = 0;
+
+    while (studentQuery.next()) {
+        QVariant studentId = studentQuery.value(0); // Get student ID
+
+        // Check if this subject is already assigned to the student
+        QSqlQuery checkQuery(db.getDatabase());
+        checkQuery.prepare("SELECT 1 FROM marks WHERE student_id = :studentId AND subject_id = :subjectId");
+        checkQuery.bindValue(":studentId", studentId);
+        checkQuery.bindValue(":subjectId", subjectId);
+
+        if (checkQuery.exec() && checkQuery.next()) {
+            // Skip if already assigned
+            continue;
+        }
+
+        // Assign the subject to the student
+        assignQuery.prepare("INSERT INTO marks (student_id, subject_id) VALUES (:studentId, :subjectId)");
+        assignQuery.bindValue(":studentId", studentId);
+        assignQuery.bindValue(":subjectId", subjectId);
+
+        if (assignQuery.exec()) {
+            assignedCount++;
+        } else {
+            qDebug() << "Failed to assign subject to student ID:" << studentId << "Error:" << assignQuery.lastError().text();
+        }
+    }
+
+    QMessageBox::information(this, "Assignment Complete",
+                             QString("Subject '%1' successfully assigned to %2 students in group '%3'.")
+                                 .arg(selectedSubject, QString::number(assignedCount), selectedGroup));
+
+   //loadGrades(); // Refresh the grades view
+}
+
+
+
+void mainApplication::on_pushButton_ViewGrades_clicked()
+{
+    loadGrades();
 }
 

@@ -365,6 +365,13 @@
                        <item>
                         <layout class="QVBoxLayout" name="verticalLayout_9">
                          <item>
+                          <widget class="QPushButton" name="pushButton_AssignGroup">
+                           <property name="text">
+                            <string>Assign Group</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
                           <widget class="QPushButton" name="pushButton_SubjectAdd">
                            <property name="text">
                             <string>Add</string>
@@ -401,6 +408,13 @@
                           <widget class="QPushButton" name="pushButton_SubjectEdit">
                            <property name="text">
                             <string>Edit</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_ViewGrades">
+                           <property name="text">
+                            <string>View Grades</string>
                            </property>
                           </widget>
                          </item>
