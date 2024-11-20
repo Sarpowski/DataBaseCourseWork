@@ -29,10 +29,11 @@ public:
     void editStudent();
     void loadTeacherName();
     void loadSubject();
-
+    void loadGrades();
     void loadSubjectsWithTeachers();
-
-
+    void exportToCsv();
+    void exportToPdf();
+    void exportData();
 private slots:
 
 
@@ -59,6 +60,13 @@ private slots:
     void on_pushButton_SubjectEdit_clicked();
 
     void on_pushButton_AssignTeacher_clicked();
+
+    void on_pushButton_AssignGroup_clicked();
+
+
+    void on_pushButton_ViewGrades_clicked();
+
+    void on_pushButton_ExportData_clicked();
 
 private:
     bool firstRun_ ;
