@@ -43,6 +43,11 @@ mainApplication::mainApplication(QWidget *parent)
     loadTeacherName();
     loadSubject();
     ui->comboBox_Subject->setMinimumSize(200, 30);
+
+
+    loadComboBoxGroupForMark();
+    loadComboBoxSubjectsForMark();
+
     //Connections
     connect(ui->pushButton_AddGroup,&QPushButton::clicked,this,&mainApplication::pushButton_AddGroup);
     connect(ui->MA_pushButton, &QPushButton::clicked, this, &mainApplication::on_pushButtonLoadTable_clicked);
@@ -1026,6 +1031,52 @@ void mainApplication::loadSubjectsWithTeachers()
 }
 
 
+
+
+void mainApplication::loadComboBoxGroupForMark()
+{
+    modeldb& db = modeldb::getInstance();
+
+    ui->comboBox_MarkSelectGroup->clear();
+    ui->comboBox_MarkSelectGroup->addItem("Select a Group", QVariant()); // Placeholder item
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, name FROM groups ORDER BY name");
+
+    if (query.exec()) {
+        while (query.next()) {
+            int groupId = query.value(0).toInt();
+            QString groupName = query.value(1).toString();
+            ui->comboBox_MarkSelectGroup->addItem(groupName, groupId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load groups: " + query.lastError().text());
+    }
+
+}
+
+void mainApplication::loadComboBoxSubjectsForMark()
+{
+    modeldb& db = modeldb::getInstance();
+
+    ui->comboBox_MarkSelectSubject->clear();
+    ui->comboBox_MarkSelectSubject->addItem("Select a Subject", QVariant()); // Placeholder item
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, name FROM subjects ORDER BY name");
+
+    if (query.exec()) {
+        while (query.next()) {
+            int subjectId = query.value(0).toInt();
+            QString subjectName = query.value(1).toString();
+            ui->comboBox_MarkSelectSubject->addItem(subjectName, subjectId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load subjects: " + query.lastError().text());
+    }
+}
+
+
 // void mainApplication::on_pushButton_AssignGroup_clicked()
 // {
 //     modeldb& db = modeldb::getInstance();
@@ -1273,3 +1324,57 @@ void mainApplication::on_pushButton_ExportData_clicked()
     QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
 
 }
+
+void mainApplication::on_pushButton_MarkView_clicked()
+{
+    QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
+    QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
+
+    qDebug() << "Selected Group ID:" << groupId; // Debugging output
+    qDebug() << "Selected Subject ID:" << subjectId; // Debugging output
+
+    if (!groupId.isValid() || !subjectId.isValid()) {
+        QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+
+    // Create a QSqlQueryModel for fetching data
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+
+    // Prepare the SQL query to fetch grades
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT p.id AS Student_ID, "
+                  "       p.first_name || ' ' || p.last_name AS Student_Name, "
+                  "       COALESCE(m.value::TEXT, 'No Grade') AS Grade "
+                  "FROM people p "
+                  "LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId "
+                  "WHERE p.group_id = :groupId AND p.type = 'S' "
+                  "ORDER BY p.first_name");
+    query.bindValue(":groupId", groupId);
+    query.bindValue(":subjectId", subjectId);
+
+    if (!query.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to load grades: " + query.lastError().text());
+        return;
+    }
+
+    // Set the query result to the model
+    model->setQuery(query);
+
+    // Set headers for the columns
+    model->setHeaderData(0, Qt::Horizontal, "Student ID");
+    model->setHeaderData(1, Qt::Horizontal, "Student Name");
+    model->setHeaderData(2, Qt::Horizontal, "Grade");
+
+    // Assign the model to the QTableView
+    ui->tableViewMark->setModel(model);
+
+    // Resize columns to fit their contents
+    ui->tableViewMark->resizeColumnsToContents();
+
+    // Optional: Stretch the last column to fill the available space
+    ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+

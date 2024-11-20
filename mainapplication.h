@@ -34,6 +34,10 @@ public:
     void exportToCsv();
     void exportToPdf();
     void exportData();
+
+    void loadComboBoxGroupForMark();
+
+    void loadComboBoxSubjectsForMark();
 private slots:
 
 
@@ -67,6 +71,10 @@ private slots:
     void on_pushButton_ViewGrades_clicked();
 
     void on_pushButton_ExportData_clicked();
+
+    void on_pushButton_MarkView_clicked();
+
+
 
 private:
     bool firstRun_ ;
