@@ -413,7 +413,7 @@
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_13">
                      <item>
-                      <widget class="QListView" name="listView"/>
+                      <widget class="QTableView" name="tableViewSubject"/>
                      </item>
                     </layout>
                    </item>

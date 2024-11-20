@@ -32,6 +32,7 @@ mainApplication::mainApplication(QWidget *parent)
     db.initDb();
 
     initMainAppTableView(db);
+    loadSubjectsWithTeachers();
     groupBoxGroupSelect();
     checkBoxFilter();
     loadStudentNames();
@@ -752,8 +753,8 @@ void mainApplication::on_pushButton_SubjectAdd_clicked()
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Subject added successfully.");
 
-
         loadSubject();
+        loadSubjectsWithTeachers();
 
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to update Subject: " + query.lastError().text());
@@ -783,6 +784,7 @@ void mainApplication::on_pushButton_SubjectDelete_clicked()
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Subject deleted successfully.");
         loadSubject();
+        loadSubjectsWithTeachers();
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to delete the subject: " + query.lastError().text());
     }
@@ -826,6 +828,7 @@ void mainApplication::on_pushButton_SubjectEdit_clicked()
 
 
         loadSubject();
+        loadSubjectsWithTeachers(); // Refresh the view
 
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to update Subject: " + query.lastError().text());
@@ -908,8 +911,54 @@ void mainApplication::on_pushButton_AssignTeacher_clicked()
     if (updateQuery.exec()) {
         QMessageBox::information(this, "Success", "Teacher successfully assigned to the subject.");
         loadSubject(); // Refresh the subjects
+        loadSubjectsWithTeachers(); // Refresh the view
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to assign teacher to subject: " + updateQuery.lastError().text());
+    }
+}
+
+void mainApplication::loadSubjectsWithTeachers()
+{
+    // Access the database instance
+    modeldb& db = modeldb::getInstance();
+
+    // Create a QSqlQueryModel to fetch and display custom query results
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+
+    // Prepare the query to fetch subjects and their assigned teachers
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT s.id AS Subject_ID, "
+                  "       s.name AS Subject, "
+                  "       COALESCE(p.first_name || ' ' || p.last_name, 'No Teacher') AS Teacher "
+                  "FROM subjects s "
+                  "LEFT JOIN people p ON s.teacher_id = p.id");
+
+    if (!query.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to load subjects and teachers: " + query.lastError().text());
+        return;
+    }
+
+    // Set the query result to the model
+    model->setQuery(query);
+
+    // Set headers for the columns
+    model->setHeaderData(0, Qt::Horizontal, "Subject ID");
+    model->setHeaderData(1, Qt::Horizontal, "Subject");
+    model->setHeaderData(2, Qt::Horizontal, "Teacher");
+
+    // Assign the refreshed model to the QTableView
+    ui->tableViewSubject->setModel(nullptr); // Detach current model
+    ui->tableViewSubject->setModel(model);   // Attach refreshed model
+
+    // Resize columns to fit their contents
+    ui->tableViewSubject->resizeColumnsToContents();
+
+    // Optional: Stretch the last column to fill the available space
+    ui->tableViewSubject->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // Debugging: Check if the query executed successfully
+    if (query.lastError().isValid()) {
+        qDebug() << "Query execution error:" << query.lastError().text();
     }
 }
 

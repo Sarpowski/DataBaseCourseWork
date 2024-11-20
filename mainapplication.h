@@ -30,7 +30,7 @@ public:
     void loadTeacherName();
     void loadSubject();
 
-
+    void loadSubjectsWithTeachers();
 
 
 private slots:
