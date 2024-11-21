@@ -491,6 +491,20 @@
                         </property>
                        </widget>
                       </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_MarkEdit">
+                        <property name="text">
+                         <string>Edit</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_MarkSave">
+                        <property name="text">
+                         <string>Save</string>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </item>
                    </layout>

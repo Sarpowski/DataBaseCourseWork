@@ -8,6 +8,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QStandardItemModel>
 
 #include<QFileDialog>
 #include <QInputDialog>
@@ -19,7 +20,7 @@
 #include <QPdfWriter>
 #include <QFile>
 #include <QPainter>
-
+#include <QStyledItemDelegate>
 #include "modeldb.h"
 
 mainApplication::mainApplication(QWidget *parent)
@@ -54,6 +55,10 @@ mainApplication::mainApplication(QWidget *parent)
     connect(ui->MA_checkBox_Student, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->MA_checkBox_Teacher, &QCheckBox::checkStateChanged, this, &mainApplication::checkBoxFilter);
     connect(ui->pushButtonStudentEdit, &QPushButton::clicked, this, &mainApplication::editStudent);
+
+    // In mainApplication constructor or setupUi
+    connect(ui->pushButton_MarkView, &QPushButton::clicked,
+            this, &mainApplication::on_pushButtonLoadTable_clicked);
 }
 
 
@@ -1325,14 +1330,163 @@ void mainApplication::on_pushButton_ExportData_clicked()
 
 }
 
+// void mainApplication::on_pushButton_MarkView_clicked()
+// {
+
+//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
+//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
+
+//     if (!groupId.isValid() || !subjectId.isValid()) {
+//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
+//         return;
+//     }
+
+//     modeldb& db = modeldb::getInstance();
+
+//     // Create a QSqlQueryModel to display the results in the QTableView
+//     QSqlQueryModel *model = new QSqlQueryModel(this);
+
+//     // Prepare and execute the SQL query
+//     QSqlQuery query(db.getDatabase());
+//     query.prepare(R"(
+//     SELECT p.id AS Student_ID,
+//            p.first_name || ' ' || p.last_name AS Student_Name,
+//            COALESCE(m.value::TEXT, 'No Grade') AS Grade
+//     FROM people p
+//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
+//     WHERE p.group_id = :groupId AND p.type = 'S'
+//     ORDER BY p.first_name
+// )");
+//     query.bindValue(":groupId", groupId.toInt());
+//     query.bindValue(":subjectId", subjectId.toInt());
+
+//     // Execute the query and set it to the model
+//     if (!query.exec()) {
+//         QMessageBox::warning(this, "Database Error", query.lastError().text());
+//         return;
+//     }
+
+//     model->setQuery(query);
+
+
+//     // Set headers for better readability
+//     model->setHeaderData(0, Qt::Horizontal, "Student ID");
+//     model->setHeaderData(1, Qt::Horizontal, "Student Name");
+//     model->setHeaderData(2, Qt::Horizontal, "Grade");
+
+//     // Assign the model to the QTableView
+//     ui->tableViewMark->setModel(model);
+
+//     // Resize columns to fit their contents
+//     ui->tableViewMark->resizeColumnsToContents();
+
+//     // Optional: Stretch the last column to fill available space
+//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+
+
+
+
+// }
+
+
+// void mainApplication::on_pushButton_MarkView_clicked()
+// {
+//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
+//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
+
+//     if (!groupId.isValid() || !subjectId.isValid()) {
+//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
+//         return;
+//     }
+
+//     modeldb& db = modeldb::getInstance();
+
+//     // Create a QSqlQueryModel
+//     QSqlQueryModel *model = new QSqlQueryModel(this);
+
+//     // Set the query
+//     QSqlQuery query(db.getDatabase());
+//     query.prepare(R"(
+//     SELECT p.id AS Student_ID,
+//            p.first_name || ' ' || p.last_name AS Student_Name,
+//            COALESCE(m.value::TEXT, 'No Grade') AS Grade
+//     FROM people p
+//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
+//     WHERE p.group_id = :groupId AND p.type = 'S'
+//     ORDER BY p.first_name
+// )");
+//     query.bindValue(":groupId", groupId.toInt());
+//     query.bindValue(":subjectId", subjectId.toInt());
+
+//     if (!query.exec()) {
+//         QMessageBox::warning(this, "Database Error", query.lastError().text());
+//         return;
+//     }
+
+//     model->setQuery(query);
+
+//     // Set headers for better readability
+//     model->setHeaderData(0, Qt::Horizontal, "Student ID");
+//     model->setHeaderData(1, Qt::Horizontal, "Student Name");
+//     model->setHeaderData(2, Qt::Horizontal, "Grade");
+
+//     // Assign the model to the QTableView
+//     ui->tableViewMark->setModel(model);
+
+//     // Enable editing only for the "Grade" column
+//     //ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+
+//     // Resize columns
+//     ui->tableViewMark->resizeColumnsToContents();
+//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+//     // Save subjectId for editing logic
+//     ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
+// }
+
+
+
+void mainApplication::on_pushButton_MarkEdit_clicked()
+{
+    // Check if a model and data are actually loaded
+    if (!ui->tableViewMark->model()) {
+        QMessageBox::warning(this, "Edit Error", "No data loaded to edit.");
+        return;
+    }
+
+    qDebug("Edit mode activated");
+    ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+    ui->tableViewMark->selectColumn(2); // Select Grade column
+}
+
+
+// void mainApplication::on_pushButton_MarkSave_clicked()
+// {
+//     modeldb& db = modeldb::getInstance();
+
+//     // Get the model from the table view
+//     QSqlTableModel *model = qobject_cast<QSqlTableModel *>(ui->tableViewMark->model());
+//     if (!model) {
+//         QMessageBox::warning(this, "Error", "Failed to retrieve the model for grades.");
+//         return;
+//     }
+
+//     // Submit all changes to the database
+//     if (!model->submitAll()) {
+//         QMessageBox::warning(this, "Database Error", "Failed to save changes: " + model->lastError().text());
+//         return;
+//     }
+
+//     QMessageBox::information(this, "Success", "Grades saved successfully.");
+//     // Optional: Refresh the view after saving
+//     model->select();
+// }
+
 void mainApplication::on_pushButton_MarkView_clicked()
 {
     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
-
-    qDebug() << "Selected Group ID:" << groupId; // Debugging output
-    qDebug() << "Selected Subject ID:" << subjectId; // Debugging output
-
     if (!groupId.isValid() || !subjectId.isValid()) {
         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
         return;
@@ -1340,41 +1494,171 @@ void mainApplication::on_pushButton_MarkView_clicked()
 
     modeldb& db = modeldb::getInstance();
 
-    // Create a QSqlQueryModel for fetching data
-    QSqlQueryModel *model = new QSqlQueryModel(this);
+    // Use QStandardItemModel instead of QSqlQueryModel
+    QStandardItemModel *model = new QStandardItemModel(this);
 
-    // Prepare the SQL query to fetch grades
+    // Prepare the query
     QSqlQuery query(db.getDatabase());
-    query.prepare("SELECT p.id AS Student_ID, "
-                  "       p.first_name || ' ' || p.last_name AS Student_Name, "
-                  "       COALESCE(m.value::TEXT, 'No Grade') AS Grade "
-                  "FROM people p "
-                  "LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId "
-                  "WHERE p.group_id = :groupId AND p.type = 'S' "
-                  "ORDER BY p.first_name");
-    query.bindValue(":groupId", groupId);
-    query.bindValue(":subjectId", subjectId);
+    query.prepare(R"(
+    SELECT p.id AS Student_ID,
+           p.first_name || ' ' || p.last_name AS Student_Name,
+           COALESCE(m.value::TEXT, 'No Grade') AS Grade,
+           m.id AS Mark_ID
+    FROM people p
+    LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
+    WHERE p.group_id = :groupId AND p.type = 'S'
+    ORDER BY p.first_name
+)");
+    query.bindValue(":groupId", groupId.toInt());
+    query.bindValue(":subjectId", subjectId.toInt());
 
     if (!query.exec()) {
-        QMessageBox::warning(this, "Database Error", "Failed to load grades: " + query.lastError().text());
+        QMessageBox::warning(this, "Database Error", query.lastError().text());
         return;
     }
 
-    // Set the query result to the model
-    model->setQuery(query);
+    // Set up model headers
+    model->setColumnCount(4);
+    model->setHorizontalHeaderLabels({"Student ID", "Student Name", "Grade", "Mark ID"});
 
-    // Set headers for the columns
-    model->setHeaderData(0, Qt::Horizontal, "Student ID");
-    model->setHeaderData(1, Qt::Horizontal, "Student Name");
-    model->setHeaderData(2, Qt::Horizontal, "Grade");
+    // Populate the model
+    while (query.next()) {
+        QList<QStandardItem*> row;
 
-    // Assign the model to the QTableView
+        // Student ID (not editable)
+        QStandardItem* studentIdItem = new QStandardItem(query.value(0).toString());
+        studentIdItem->setEditable(false);
+        row.append(studentIdItem);
+
+        // Student Name (not editable)
+        QStandardItem* studentNameItem = new QStandardItem(query.value(1).toString());
+        studentNameItem->setEditable(false);
+        row.append(studentNameItem);
+
+        // Grade (editable)
+        QStandardItem* gradeItem = new QStandardItem(query.value(2).toString());
+        gradeItem->setEditable(true);
+        row.append(gradeItem);
+
+        // Mark ID (hidden)
+        QStandardItem* markIdItem = new QStandardItem(query.value(3).toString());
+        markIdItem->setEditable(false);
+        row.append(markIdItem);
+
+        model->appendRow(row);
+    }
+
+    // Set the model
     ui->tableViewMark->setModel(model);
 
-    // Resize columns to fit their contents
-    ui->tableViewMark->resizeColumnsToContents();
+    // Hide the Mark ID column
+    ui->tableViewMark->setColumnHidden(3, true);
 
-    // Optional: Stretch the last column to fill the available space
+    // Configure edit triggers
+    ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
+
+    // Resize columns
+    ui->tableViewMark->resizeColumnsToContents();
     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // Store subject ID as a property
+    ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
 }
 
+// Add this method to handle saving edited grades
+void mainApplication::on_pushButton_MarkSave_clicked()
+{
+    QStandardItemModel* model = qobject_cast<QStandardItemModel*>(ui->tableViewMark->model());
+    if (!model) {
+        qDebug() << "No model found";
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+    QSqlDatabase database = db.getDatabase();
+
+    // Start a transaction
+    if (!database.transaction()) {
+        qDebug() << "Failed to start transaction:" << database.lastError().text();
+        QMessageBox::warning(this, "Transaction Error", "Could not start database transaction.");
+        return;
+    }
+
+    bool allSaveSuccessful = true;
+    int subjectId = ui->tableViewMark->property("subjectId").toInt();
+
+    qDebug() << "Saving marks for Subject ID:" << subjectId;
+    qDebug() << "Total rows:" << model->rowCount();
+
+    for (int row = 0; row < model->rowCount(); ++row) {
+        // Get student ID and grade
+        QString studentId = model->item(row, 0)->text();
+        QString gradeStr = model->item(row, 2)->text();
+        QString markId = model->item(row, 3)->text();
+
+        qDebug() << "Processing row:" << row
+                 << "Student ID:" << studentId
+                 << "Grade:" << gradeStr
+                 << "Mark ID:" << markId;
+
+        // Skip if grade is "No Grade"
+        if (gradeStr == "No Grade") {
+            qDebug() << "Skipping row with No Grade";
+            continue;
+        }
+
+        // Validate grade
+        bool ok;
+        int grade = gradeStr.toInt(&ok);
+        if (!ok) {
+            qDebug() << "Invalid grade for student:" << studentId;
+            QMessageBox::warning(this, "Invalid Grade",
+                                 QString("Invalid grade for student: %1").arg(studentId));
+            allSaveSuccessful = false;
+            continue;
+        }
+
+        QSqlQuery saveQuery(database);
+        if (markId.isEmpty()) {
+            // Insert new mark
+            saveQuery.prepare("INSERT INTO marks (student_id, subject_id, value) VALUES (:studentId, :subjectId, :value)");
+            saveQuery.bindValue(":studentId", studentId);
+            saveQuery.bindValue(":subjectId", subjectId);
+            saveQuery.bindValue(":value", grade);
+
+            qDebug() << "Preparing INSERT for student:" << studentId
+                     << "subject:" << subjectId
+                     << "grade:" << grade;
+        } else {
+            // Update existing mark
+            saveQuery.prepare("UPDATE marks SET value = :value WHERE id = :markId");
+            saveQuery.bindValue(":value", grade);
+            saveQuery.bindValue(":markId", markId);
+
+            qDebug() << "Preparing UPDATE for mark ID:" << markId
+                     << "new grade:" << grade;
+        }
+
+        if (!saveQuery.exec()) {
+            qDebug() << "Query execution failed:" << saveQuery.lastError().text();
+            QMessageBox::warning(this, "Database Error", saveQuery.lastError().text());
+            allSaveSuccessful = false;
+        }
+    }
+
+    // Commit or rollback
+    if (allSaveSuccessful) {
+        if (database.commit()) {
+            qDebug() << "Transaction committed successfully";
+            QMessageBox::information(this, "Marks Saved", "All marks saved successfully.");
+        } else {
+            qDebug() << "Commit failed:" << database.lastError().text();
+            database.rollback();
+            QMessageBox::warning(this, "Save Failed", "Could not commit changes.");
+        }
+    } else {
+        database.rollback();
+        qDebug() << "Transaction rolled back due to errors";
+        QMessageBox::warning(this, "Save Failed", "Some marks could not be saved. Changes rolled back.");
+    }
+}

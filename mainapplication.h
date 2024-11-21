@@ -76,6 +76,10 @@ private slots:
 
 
 
+    void on_pushButton_MarkEdit_clicked();
+
+    void on_pushButton_MarkSave_clicked();
+
 private:
     bool firstRun_ ;
     Ui::mainApplication *ui;
