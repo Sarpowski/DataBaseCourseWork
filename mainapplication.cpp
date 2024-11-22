@@ -40,13 +40,14 @@ mainApplication::mainApplication(QWidget *parent)
     loadSubjectsWithTeachers();
     groupBoxGroupSelect();
     checkBoxFilter();
-    loadStudentNames();
+
+    loadStudentNamesComboBox(ui->MA_comboBox_EditStudent);
     loadTeacherName();
     loadSubject();
     ui->comboBox_Subject->setMinimumSize(200, 30);
 
 
-    loadComboBoxGroupForMark();
+    loadComboBoxGroupForMark(ui->comboBox_MarkSelectGroup);
     loadComboBoxSubjectsForMark();
 
     //Connections
@@ -308,7 +309,7 @@ void mainApplication::editStudent() {
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Student details updated successfully.");
 
-        loadStudentNames();
+        loadStudentNamesComboBox(ui->MA_comboBox_EditStudent);
 
         for (int i = 0; i < ui->MA_comboBox_EditStudent->count(); ++i) {
             if (ui->MA_comboBox_EditStudent->itemData(i).toString() == studentId) {
@@ -592,14 +593,35 @@ void mainApplication::pushButton_AddGroup()
 
 }
 
-void mainApplication::loadStudentNames() {
+void mainApplication::loadStudentNamesComboBox(QComboBox* comboBox) {
     modeldb& db = modeldb::getInstance();
 
+    // // Clear the combo box before populating
+    // ui->MA_comboBox_EditStudent->clear();
+
+    // // Add a default "Select a student" item
+    // ui->MA_comboBox_EditStudent->addItem("Select a student");
+
+    // // Query to fetch student names and IDs
+    // QSqlQuery query(db.getDatabase());
+    // query.prepare("SELECT id, first_name, last_name FROM people WHERE type = 'S' ORDER BY first_name");
+
+    // if (query.exec()) {
+    //     while (query.next()) {
+    //         QString studentId = query.value(0).toString();
+    //         QString studentName = query.value(1).toString() + " " + query.value(2).toString();
+    //         // Add student ID and name to the combo box
+    //         ui->MA_comboBox_EditStudent->addItem(studentName, studentId);
+    //     }
+    // } else {
+    //     QMessageBox::warning(this, "Database Error", "Failed to load student names: " + query.lastError().text());
+    // }
+
     // Clear the combo box before populating
-    ui->MA_comboBox_EditStudent->clear();
+   comboBox ->clear();
 
     // Add a default "Select a student" item
-    ui->MA_comboBox_EditStudent->addItem("Select a student");
+    comboBox->addItem("Select a student");
 
     // Query to fetch student names and IDs
     QSqlQuery query(db.getDatabase());
@@ -610,7 +632,7 @@ void mainApplication::loadStudentNames() {
             QString studentId = query.value(0).toString();
             QString studentName = query.value(1).toString() + " " + query.value(2).toString();
             // Add student ID and name to the combo box
-            ui->MA_comboBox_EditStudent->addItem(studentName, studentId);
+            comboBox->addItem(studentName, studentId);
         }
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to load student names: " + query.lastError().text());
@@ -1037,13 +1059,132 @@ void mainApplication::loadSubjectsWithTeachers()
 
 
 
-
-void mainApplication::loadComboBoxGroupForMark()
+void mainApplication::loadComboBoxSubjects(QComboBox *comboBox, int studentId)
 {
+    if (!comboBox) return;
+
+    modeldb& db = modeldb::getInstance();
+    comboBox->clear();
+    comboBox->addItem("Select a Subject", QVariant());
+
+    if (studentId == 0) return; // No valid student selected
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, name FROM subjects "
+                  "WHERE id IN (SELECT subject_id FROM marks WHERE student_id = :studentId) "
+                  "ORDER BY name");
+    query.bindValue(":studentId", studentId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            int subjectId = query.value(0).toInt();
+            QString subjectName = query.value(1).toString();
+            comboBox->addItem(subjectName, subjectId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load subjects: " + query.lastError().text());
+    }
+}
+
+void mainApplication::loadComboBoxMarks(QComboBox *comboBox)
+{
+    if (!comboBox) return;
+
+    comboBox->clear();
+    for (int i = 2; i <= 5; ++i) {
+        comboBox->addItem(QString::number(i), i);
+    }
+}
+
+void mainApplication::saveOrUpdateMark(int studentId, int subjectId, int teacherId, int mark)
+{
+    if (studentId == 0 || subjectId == 0 || mark == 0) {
+        QMessageBox::warning(this, "Input Error", "Please select valid inputs.");
+        return;
+    }
+
+    modeldb& db = modeldb::getInstance();
+    QSqlQuery query(db.getDatabase());
+    query.prepare(
+        "INSERT INTO marks (student_id, subject_id, teacher_id, value) "
+        "VALUES (:studentId, :subjectId, :teacherId, :mark) "
+        "ON CONFLICT (student_id, subject_id) "
+        "DO UPDATE SET value = EXCLUDED.value, created_at = CURRENT_TIMESTAMP"
+        );
+
+    query.bindValue(":studentId", studentId);
+    query.bindValue(":subjectId", subjectId);
+    query.bindValue(":teacherId", teacherId);
+    query.bindValue(":mark", mark);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Mark saved successfully.");
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to save mark: " + query.lastError().text());
+    }
+}
+void mainApplication::loadComboBoxStudents(QComboBox *comboBox, int groupId)
+{
+    if (!comboBox) return;
+
+    modeldb& db = modeldb::getInstance();
+    comboBox->clear();
+    comboBox->addItem("Select a Student", QVariant());
+
+    if (groupId == 0) return; // No valid group selected
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, first_name, last_name FROM people WHERE type = 'S' AND group_id = :groupId ORDER BY first_name");
+    query.bindValue(":groupId", groupId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            int studentId = query.value(0).toInt();
+            QString studentName = query.value(1).toString() + " " + query.value(2).toString();
+            comboBox->addItem(studentName, studentId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load students: " + query.lastError().text());
+    }
+}
+
+
+
+
+// void mainApplication::loadComboBoxGroupForMark()
+// {
+//     modeldb& db = modeldb::getInstance();
+
+//     ui->comboBox_MarkSelectGroup->clear();
+//     ui->comboBox_MarkSelectGroup->addItem("Select a Group", QVariant()); // Placeholder item
+
+//     QSqlQuery query(db.getDatabase());
+//     query.prepare("SELECT id, name FROM groups ORDER BY name");
+
+//     if (query.exec()) {
+//         while (query.next()) {
+//             int groupId = query.value(0).toInt();
+//             QString groupName = query.value(1).toString();
+//             ui->comboBox_MarkSelectGroup->addItem(groupName, groupId);
+//         }
+//     } else {
+//         QMessageBox::warning(this, "Database Error", "Failed to load groups: " + query.lastError().text());
+//     }
+
+// }
+
+
+void mainApplication::loadComboBoxGroupForMark(QComboBox* comboBox, const QString& placeholderText)
+{
+    if (!comboBox) {
+        qWarning() << "Null pointer passed for comboBox.";
+        return;
+    }
+
     modeldb& db = modeldb::getInstance();
 
-    ui->comboBox_MarkSelectGroup->clear();
-    ui->comboBox_MarkSelectGroup->addItem("Select a Group", QVariant()); // Placeholder item
+    comboBox->clear(); // Clear any existing items
+    comboBox->addItem(placeholderText, QVariant()); // Add placeholder
 
     QSqlQuery query(db.getDatabase());
     query.prepare("SELECT id, name FROM groups ORDER BY name");
@@ -1052,12 +1193,11 @@ void mainApplication::loadComboBoxGroupForMark()
         while (query.next()) {
             int groupId = query.value(0).toInt();
             QString groupName = query.value(1).toString();
-            ui->comboBox_MarkSelectGroup->addItem(groupName, groupId);
+            comboBox->addItem(groupName, groupId);
         }
     } else {
         QMessageBox::warning(this, "Database Error", "Failed to load groups: " + query.lastError().text());
     }
-
 }
 
 void mainApplication::loadComboBoxSubjectsForMark()
@@ -1447,18 +1587,6 @@ void mainApplication::on_pushButton_ExportData_clicked()
 
 
 
-void mainApplication::on_pushButton_MarkEdit_clicked()
-{
-    // Check if a model and data are actually loaded
-    if (!ui->tableViewMark->model()) {
-        QMessageBox::warning(this, "Edit Error", "No data loaded to edit.");
-        return;
-    }
-
-    qDebug("Edit mode activated");
-    ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
-    ui->tableViewMark->selectColumn(2); // Select Grade column
-}
 
 
 // void mainApplication::on_pushButton_MarkSave_clicked()
@@ -1483,182 +1611,203 @@ void mainApplication::on_pushButton_MarkEdit_clicked()
 //     model->select();
 // }
 
+
+//////
+// void mainApplication::on_pushButton_MarkView_clicked()
+// {
+//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
+//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
+//     if (!groupId.isValid() || !subjectId.isValid()) {
+//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
+//         return;
+//     }
+
+//     modeldb& db = modeldb::getInstance();
+
+//     // Use QStandardItemModel instead of QSqlQueryModel
+//     QStandardItemModel *model = new QStandardItemModel(this);
+
+//     // Prepare the query
+//     QSqlQuery query(db.getDatabase());
+//     query.prepare(R"(
+//     SELECT p.id AS Student_ID,
+//            p.first_name || ' ' || p.last_name AS Student_Name,
+//            COALESCE(m.value::TEXT, 'No Grade') AS Grade,
+//            m.id AS Mark_ID
+//     FROM people p
+//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
+//     WHERE p.group_id = :groupId AND p.type = 'S'
+//     ORDER BY p.first_name
+// )");
+//     query.bindValue(":groupId", groupId.toInt());
+//     query.bindValue(":subjectId", subjectId.toInt());
+
+//     if (!query.exec()) {
+//         QMessageBox::warning(this, "Database Error", query.lastError().text());
+//         return;
+//     }
+
+//     // Set up model headers
+//     model->setColumnCount(4);
+//     model->setHorizontalHeaderLabels({"Student ID", "Student Name", "Grade", "Mark ID"});
+
+//     // Populate the model
+//     while (query.next()) {
+//         QList<QStandardItem*> row;
+
+//         // Student ID (not editable)
+//         QStandardItem* studentIdItem = new QStandardItem(query.value(0).toString());
+//         studentIdItem->setEditable(false);
+//         row.append(studentIdItem);
+
+//         // Student Name (not editable)
+//         QStandardItem* studentNameItem = new QStandardItem(query.value(1).toString());
+//         studentNameItem->setEditable(false);
+//         row.append(studentNameItem);
+
+//         // Grade (editable)
+//         QStandardItem* gradeItem = new QStandardItem(query.value(2).toString());
+//         gradeItem->setEditable(true);
+//         row.append(gradeItem);
+
+//         // Mark ID (hidden)
+//         QStandardItem* markIdItem = new QStandardItem(query.value(3).toString());
+//         markIdItem->setEditable(false);
+//         row.append(markIdItem);
+
+//         model->appendRow(row);
+//     }
+
+//     // Set the model
+//     ui->tableViewMark->setModel(model);
+
+//     // Hide the Mark ID column
+//     ui->tableViewMark->setColumnHidden(3, true);
+
+//     // Configure edit triggers
+//     ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
+
+//     // Resize columns
+//     ui->tableViewMark->resizeColumnsToContents();
+//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+//     // Store subject ID as a property
+//     ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
+// }
+
 void mainApplication::on_pushButton_MarkView_clicked()
 {
-    QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
-    QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
-    if (!groupId.isValid() || !subjectId.isValid()) {
-        QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
-        return;
-    }
+    // modeldb& db = modeldb::getInstance();
+    // // Create a QSqlTableModel to display and edit the results in the QTableView
+    // QSqlTableModel *model = new QSqlTableModel(this, db.getDatabase());
+    // model->setTable("marks");
+    // model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    // model->select();
+
+    // // Set headers for better readability
+    // model->setHeaderData(0, Qt::Horizontal, "Student ID");
+    // model->setHeaderData(1, Qt::Horizontal, "Student Name");
+    // model->setHeaderData(2, Qt::Horizontal, "Subject");
+    // model->setHeaderData(3, Qt::Horizontal, "Mark");
+
+    // // Assign the model to the QTableView
+    // ui->tableViewMark->setModel(model);
+
+    // // Resize columns to fit their contents
+    // ui->tableViewMark->resizeColumnsToContents();
+
+    // // Optional: Stretch the last column to fill available space
+    // ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // // Disable editing initially
+    // ui->tableViewMark->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 
     modeldb& db = modeldb::getInstance();
+    // Create a QSqlQueryModel to display and edit the results in the QTableView
+    QSqlQueryModel *model = new QSqlQueryModel(this);
 
-    // Use QStandardItemModel instead of QSqlQueryModel
-    QStandardItemModel *model = new QStandardItemModel(this);
-
-    // Prepare the query
+    // Prepare a custom query to join the "marks" and "people" tables to get student names
     QSqlQuery query(db.getDatabase());
     query.prepare(R"(
-    SELECT p.id AS Student_ID,
-           p.first_name || ' ' || p.last_name AS Student_Name,
-           COALESCE(m.value::TEXT, 'No Grade') AS Grade,
-           m.id AS Mark_ID
-    FROM people p
-    LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
-    WHERE p.group_id = :groupId AND p.type = 'S'
-    ORDER BY p.first_name
-)");
+        SELECT m.id AS Mark_ID,
+               p.first_name || ' ' || p.last_name AS Student_Name,
+               s.name AS Subject,
+               m.value AS Mark
+        FROM marks m
+        JOIN people p ON m.student_id = p.id
+        JOIN subjects s ON m.subject_id = s.id
+        WHERE p.group_id = :groupId
+        ORDER BY p.first_name
+    )");
+
+    QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
+    if (!groupId.isValid()) {
+        QMessageBox::warning(this, "Input Error", "Please select a valid group.");
+        return;
+    }
     query.bindValue(":groupId", groupId.toInt());
-    query.bindValue(":subjectId", subjectId.toInt());
 
     if (!query.exec()) {
         QMessageBox::warning(this, "Database Error", query.lastError().text());
         return;
     }
 
-    // Set up model headers
-    model->setColumnCount(4);
-    model->setHorizontalHeaderLabels({"Student ID", "Student Name", "Grade", "Mark ID"});
+    // Set the query result to the model
+    model->setQuery(query);
 
-    // Populate the model
-    while (query.next()) {
-        QList<QStandardItem*> row;
+    // Set headers for better readability
+    model->setHeaderData(0, Qt::Horizontal, "Mark ID");
+    model->setHeaderData(1, Qt::Horizontal, "Student Name");
+    model->setHeaderData(2, Qt::Horizontal, "Subject");
+    model->setHeaderData(3, Qt::Horizontal, "Mark");
 
-        // Student ID (not editable)
-        QStandardItem* studentIdItem = new QStandardItem(query.value(0).toString());
-        studentIdItem->setEditable(false);
-        row.append(studentIdItem);
-
-        // Student Name (not editable)
-        QStandardItem* studentNameItem = new QStandardItem(query.value(1).toString());
-        studentNameItem->setEditable(false);
-        row.append(studentNameItem);
-
-        // Grade (editable)
-        QStandardItem* gradeItem = new QStandardItem(query.value(2).toString());
-        gradeItem->setEditable(true);
-        row.append(gradeItem);
-
-        // Mark ID (hidden)
-        QStandardItem* markIdItem = new QStandardItem(query.value(3).toString());
-        markIdItem->setEditable(false);
-        row.append(markIdItem);
-
-        model->appendRow(row);
-    }
-
-    // Set the model
+    // Assign the model to the QTableView
     ui->tableViewMark->setModel(model);
 
-    // Hide the Mark ID column
-    ui->tableViewMark->setColumnHidden(3, true);
-
-    // Configure edit triggers
-    ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
-
-    // Resize columns
+    // Resize columns to fit their contents
     ui->tableViewMark->resizeColumnsToContents();
+
+    // Optional: Stretch the last column to fill available space
     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Store subject ID as a property
-    ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
+    // Disable editing initially
+    ui->tableViewMark->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
-// Add this method to handle saving edited grades
-void mainApplication::on_pushButton_MarkSave_clicked()
+void mainApplication::on_pushButton_SaveMark_clicked()
 {
-    QStandardItemModel* model = qobject_cast<QStandardItemModel*>(ui->tableViewMark->model());
-    if (!model) {
-        qDebug() << "No model found";
-        return;
-    }
-
-    modeldb& db = modeldb::getInstance();
-    QSqlDatabase database = db.getDatabase();
-
-    // Start a transaction
-    if (!database.transaction()) {
-        qDebug() << "Failed to start transaction:" << database.lastError().text();
-        QMessageBox::warning(this, "Transaction Error", "Could not start database transaction.");
-        return;
-    }
-
-    bool allSaveSuccessful = true;
-    int subjectId = ui->tableViewMark->property("subjectId").toInt();
-
-    qDebug() << "Saving marks for Subject ID:" << subjectId;
-    qDebug() << "Total rows:" << model->rowCount();
-
-    for (int row = 0; row < model->rowCount(); ++row) {
-        // Get student ID and grade
-        QString studentId = model->item(row, 0)->text();
-        QString gradeStr = model->item(row, 2)->text();
-        QString markId = model->item(row, 3)->text();
-
-        qDebug() << "Processing row:" << row
-                 << "Student ID:" << studentId
-                 << "Grade:" << gradeStr
-                 << "Mark ID:" << markId;
-
-        // Skip if grade is "No Grade"
-        if (gradeStr == "No Grade") {
-            qDebug() << "Skipping row with No Grade";
-            continue;
-        }
-
-        // Validate grade
-        bool ok;
-        int grade = gradeStr.toInt(&ok);
-        if (!ok) {
-            qDebug() << "Invalid grade for student:" << studentId;
-            QMessageBox::warning(this, "Invalid Grade",
-                                 QString("Invalid grade for student: %1").arg(studentId));
-            allSaveSuccessful = false;
-            continue;
-        }
-
-        QSqlQuery saveQuery(database);
-        if (markId.isEmpty()) {
-            // Insert new mark
-            saveQuery.prepare("INSERT INTO marks (student_id, subject_id, value) VALUES (:studentId, :subjectId, :value)");
-            saveQuery.bindValue(":studentId", studentId);
-            saveQuery.bindValue(":subjectId", subjectId);
-            saveQuery.bindValue(":value", grade);
-
-            qDebug() << "Preparing INSERT for student:" << studentId
-                     << "subject:" << subjectId
-                     << "grade:" << grade;
-        } else {
-            // Update existing mark
-            saveQuery.prepare("UPDATE marks SET value = :value WHERE id = :markId");
-            saveQuery.bindValue(":value", grade);
-            saveQuery.bindValue(":markId", markId);
-
-            qDebug() << "Preparing UPDATE for mark ID:" << markId
-                     << "new grade:" << grade;
-        }
-
-        if (!saveQuery.exec()) {
-            qDebug() << "Query execution failed:" << saveQuery.lastError().text();
-            QMessageBox::warning(this, "Database Error", saveQuery.lastError().text());
-            allSaveSuccessful = false;
-        }
-    }
-
-    // Commit or rollback
-    if (allSaveSuccessful) {
-        if (database.commit()) {
-            qDebug() << "Transaction committed successfully";
-            QMessageBox::information(this, "Marks Saved", "All marks saved successfully.");
-        } else {
-            qDebug() << "Commit failed:" << database.lastError().text();
-            database.rollback();
-            QMessageBox::warning(this, "Save Failed", "Could not commit changes.");
-        }
-    } else {
-        database.rollback();
-        qDebug() << "Transaction rolled back due to errors";
-        QMessageBox::warning(this, "Save Failed", "Some marks could not be saved. Changes rolled back.");
-    }
+    int studentId = ui->comboBox_EditMarkSelectStudent->currentData().toInt();
+    int subjectId = ui->comboBox_EditMarkChooseSubject_2->currentData().toInt();
+    int mark = ui->comboBox_EditMark_Mark->currentData().toInt();
+    saveOrUpdateMark(studentId, subjectId,35, mark);//админ can be able to change but who knows
+//                                                   i dont have any idea for a ideal way to handle logically i mean
 }
+
+
+void mainApplication::on_tabWidget_2_currentChanged(int index)
+{
+    loadComboBoxGroupForMark(ui->comboBox_EditMarkSelectGroup);
+
+}
+
+
+void mainApplication::on_comboBox_EditMarkSelectGroup_currentIndexChanged(int index)
+{
+    loadComboBoxStudents(ui->comboBox_EditMarkSelectStudent, index);
+}
+
+
+void mainApplication::on_comboBox_EditMarkSelectStudent_currentIndexChanged(int index)
+{
+    int studentId = ui->comboBox_EditMarkSelectStudent->itemData(index).toInt();
+    loadComboBoxSubjects(ui->comboBox_EditMarkChooseSubject_2, studentId);
+    ui->comboBox_EditMark_Mark->clear(); // Clear marks until a subject is selected
+}
+
+
+void mainApplication::on_comboBox_EditMarkChooseSubject_2_currentIndexChanged(int index)
+{
+      loadComboBoxMarks(ui->comboBox_EditMark_Mark);
+}
+

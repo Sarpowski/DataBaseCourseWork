@@ -4,6 +4,7 @@
 #include "modeldb.h"
 
 #include <QWidget>
+#include <qcombobox.h>
 
 
 
@@ -24,7 +25,7 @@ public:
     void groupBoxGroupSelect();
 
     void loadGroups();
-    void loadStudentNames();
+    void loadStudentNamesComboBox(QComboBox* comboBox);
     void addStudent();
     void editStudent();
     void loadTeacherName();
@@ -35,7 +36,12 @@ public:
     void exportToPdf();
     void exportData();
 
-    void loadComboBoxGroupForMark();
+    void saveOrUpdateMark(int studentId, int subjectId, int teacherId, int mark);
+    void loadComboBoxSubjects(QComboBox* comboBox, int studentId);
+    void loadComboBoxMarks(QComboBox* comboBox);
+    void loadComboBoxStudents(QComboBox* comboBox, int groupId);
+
+    void loadComboBoxGroupForMark(QComboBox* comboBox, const QString& placeholderText = "Select a Group");
 
     void loadComboBoxSubjectsForMark();
 private slots:
@@ -76,9 +82,15 @@ private slots:
 
 
 
-    void on_pushButton_MarkEdit_clicked();
+    void on_pushButton_SaveMark_clicked();
 
-    void on_pushButton_MarkSave_clicked();
+    void on_tabWidget_2_currentChanged(int index);
+
+    void on_comboBox_EditMarkSelectGroup_currentIndexChanged(int index);
+
+    void on_comboBox_EditMarkSelectStudent_currentIndexChanged(int index);
+
+    void on_comboBox_EditMarkChooseSubject_2_currentIndexChanged(int index);
 
 private:
     bool firstRun_ ;
