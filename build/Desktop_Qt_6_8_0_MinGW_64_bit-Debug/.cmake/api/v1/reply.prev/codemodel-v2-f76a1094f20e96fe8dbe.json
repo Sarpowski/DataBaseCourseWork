@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-9a4597de5483331437ea.json",
+					"jsonFile" : "directory-.-Debug-0eba01e1749772b79ca4.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "CourseWorkDB::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-CourseWorkDB-Debug-953850059955815319c8.json",
+					"jsonFile" : "target-CourseWorkDB-Debug-711ddf3e968f31d64e98.json",
 					"name" : "CourseWorkDB",
 					"projectIndex" : 0
 				},

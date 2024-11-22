@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
     w.show();
 
     //Application Screen
-  //  mainApplication *mainWindow = new mainApplication;
-    // mainWindow->show();
+   // mainApplication *mainWindow = new mainApplication;
+    //mainWindow->show();
 
     //DataBase Test
     connectToDatabase();

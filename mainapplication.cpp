@@ -23,6 +23,10 @@
 #include <QStyledItemDelegate>
 #include "modeldb.h"
 
+#include <QCryptographicHash> // For password hashing
+
+
+
 mainApplication::mainApplication(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::mainApplication)
@@ -1148,6 +1152,31 @@ void mainApplication::loadComboBoxStudents(QComboBox *comboBox, int groupId)
     }
 }
 
+void mainApplication::loadComboBoxStudents(QComboBox *comboBox)
+{
+    if (!comboBox) return;
+
+    modeldb& db = modeldb::getInstance();
+    comboBox->clear();
+    comboBox->addItem("Select a Student", QVariant());
+
+
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT id, first_name, last_name FROM people WHERE type = 'S' ORDER BY first_name");
+
+
+    if (query.exec()) {
+        while (query.next()) {
+            int studentId = query.value(0).toInt();
+            QString studentName = query.value(1).toString() + " " + query.value(2).toString();
+            comboBox->addItem(studentName, studentId);
+        }
+    } else {
+        QMessageBox::warning(this, "Database Error", "Failed to load students: " + query.lastError().text());
+    }
+}
+
 
 
 
@@ -1809,5 +1838,77 @@ void mainApplication::on_comboBox_EditMarkSelectStudent_currentIndexChanged(int 
 void mainApplication::on_comboBox_EditMarkChooseSubject_2_currentIndexChanged(int index)
 {
       loadComboBoxMarks(ui->comboBox_EditMark_Mark);
+}
+
+
+void mainApplication::on_MA_tabWidget_Main_tabBarClicked(int index)
+{
+    loadComboBoxStudents(ui->comboBox_PL_StudentChoose);
+    ui->lineEdit_PL_password->setPlaceholderText("username");
+    ui->lineEdit_PL_username->setPlaceholderText("password");
+
+}
+
+
+void mainApplication::on_pushButton_AddLogin_clicked()
+{
+    // Get the selected student name from the ComboBox
+    QString studentName = ui->comboBox_PL_StudentChoose->currentText();
+    QString username = ui->lineEdit_PL_username->text();
+    QString plainPassword = ui->lineEdit_PL_password->text();
+
+    // Validate inputs
+    if (studentName.isEmpty() || username.isEmpty() || plainPassword.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "Please fill in all fields.");
+        return;
+    }
+
+    // Retrieve the student_id based on the selected student name
+    QSqlQuery query;
+    query.prepare("SELECT id FROM people WHERE CONCAT(first_name, ' ', last_name) = :studentName AND type = 'S'");
+    query.bindValue(":studentName", studentName);
+
+    if (!query.exec() || !query.next()) {
+        QMessageBox::critical(this, "Database Error", "Failed to retrieve student ID: " + query.lastError().text());
+        return;
+    }
+
+    int studentId = query.value("id").toInt();
+
+    // Check if the user already exists in the auth_users table
+    query.prepare("SELECT COUNT(*) FROM auth_users WHERE student_id = :student_id");
+    query.bindValue(":student_id", studentId);
+
+    if (!query.exec() || !query.next()) {
+        QMessageBox::critical(this, "Database Error", "Failed to check existing user: " + query.lastError().text());
+        return;
+    }
+
+    if (query.value(0).toInt() > 0) {
+        QMessageBox::warning(this, "Duplicate Entry", "Login credentials already exist for this student.");
+        return;
+    }
+
+    // Hash the password using QCryptographicHash
+    QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
+
+    // Insert the new login credentials into the database
+    query.prepare("INSERT INTO auth_users (student_id, username, password_hash, role) "
+                  "VALUES (:student_id, :username, :password_hash, 'Student')");
+    query.bindValue(":student_id", studentId);
+    query.bindValue(":username", username);
+    query.bindValue(":password_hash", passwordHash.toHex()); // Store the hashed password as a hex string
+
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Database Error", "Failed to add the student's login credentials: " + query.lastError().text());
+        return;
+    }
+
+    // Success feedback
+    QMessageBox::information(this, "Success", "Login credentials added successfully!");
+
+    // Clear the input fields
+    ui->lineEdit_PL_username->clear();
+    ui->lineEdit_PL_password->clear();
 }
 

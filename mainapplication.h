@@ -40,7 +40,7 @@ public:
     void loadComboBoxSubjects(QComboBox* comboBox, int studentId);
     void loadComboBoxMarks(QComboBox* comboBox);
     void loadComboBoxStudents(QComboBox* comboBox, int groupId);
-
+    void loadComboBoxStudents(QComboBox* comboBox);
     void loadComboBoxGroupForMark(QComboBox* comboBox, const QString& placeholderText = "Select a Group");
 
     void loadComboBoxSubjectsForMark();
@@ -91,6 +91,10 @@ private slots:
     void on_comboBox_EditMarkSelectStudent_currentIndexChanged(int index);
 
     void on_comboBox_EditMarkChooseSubject_2_currentIndexChanged(int index);
+
+    void on_MA_tabWidget_Main_tabBarClicked(int index);
+
+    void on_pushButton_AddLogin_clicked();
 
 private:
     bool firstRun_ ;
