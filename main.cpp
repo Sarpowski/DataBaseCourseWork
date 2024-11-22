@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //Login Screen
-   // MainWindow w;
-   // w.show();
+    MainWindow w;
+    w.show();
 
     //Application Screen
-    mainApplication *mainWindow = new mainApplication;
-    mainWindow->show();
+  //  mainApplication *mainWindow = new mainApplication;
+    // mainWindow->show();
 
     //DataBase Test
     connectToDatabase();

@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "mainapplication.h"
+#include "student.h"
+
 #include <QVBoxLayout>
 #include <qmessagebox.h>
 
@@ -49,6 +51,13 @@ void MainWindow::on_pushButtonLogin_clicked()
          mainApplication *mainWindow = new mainApplication;
          mainWindow->show();
          this->close();
+    }
+    else if(username =="test" && userPassword == "test"){
+        QMessageBox::information(this, "Login","Username and password is correct");
+       student * studentScreen = new student;
+       studentScreen->show();
+       this->close();
+
     }
     else{
          QMessageBox::warning(this,"Login","Username or password in correct");

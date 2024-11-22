@@ -34,6 +34,7 @@ set(PROJECT_SOURCES
     modeldb.h
     modeldb.cpp
 
+
 )
 
 
@@ -44,6 +45,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         mainapplication.h mainapplication.cpp mainapplication.ui
         modeldb.h modeldb.cpp
+        student.h student.cpp student.ui
+        customdialog.h customdialog.cpp
+
 
 
 
