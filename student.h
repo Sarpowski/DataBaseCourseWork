@@ -18,7 +18,8 @@ public:
 
     ~student();
     void SloadMarks();
-    void studentExportPdf(QString& text) const;
+    int getUserId() const;
+    void studentExportPdf() ;
 private slots:
     void on_pushButton_StudentExportMarks_clicked();
 
