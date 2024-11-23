@@ -20,11 +20,11 @@ int main(int argc, char *argv[])
 
     //Login Screen
     MainWindow w;
-    w.show();
+   w.show();
 
     //Application Screen
    // mainApplication *mainWindow = new mainApplication;
-    //mainWindow->show();
+   // mainWindow->show();
 
     //DataBase Test
     connectToDatabase();

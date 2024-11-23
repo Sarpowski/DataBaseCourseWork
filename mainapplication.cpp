@@ -1850,9 +1850,71 @@ void mainApplication::on_MA_tabWidget_Main_tabBarClicked(int index)
 }
 
 
+// void mainApplication::on_pushButton_AddLogin_clicked()
+// {
+//     // Get the selected student name from the ComboBox
+//     QString studentName = ui->comboBox_PL_StudentChoose->currentText();
+//     QString username = ui->lineEdit_PL_username->text();
+//     QString plainPassword = ui->lineEdit_PL_password->text();
+
+//     // Validate inputs
+//     if (studentName.isEmpty() || username.isEmpty() || plainPassword.isEmpty()) {
+//         QMessageBox::warning(this, "Input Error", "Please fill in all fields.");
+//         return;
+//     }
+
+//     // Retrieve the student_id based on the selected student name
+//     QSqlQuery query;
+//     query.prepare("SELECT id FROM people WHERE CONCAT(first_name, ' ', last_name) = :studentName AND type = 'S'");
+//     query.bindValue(":studentName", studentName);
+
+//     if (!query.exec() || !query.next()) {
+//         QMessageBox::critical(this, "Database Error", "Failed to retrieve student ID: " + query.lastError().text());
+//         return;
+//     }
+
+//     int studentId = query.value("id").toInt();
+
+//     // Check if the user already exists in the auth_users table
+//     query.prepare("SELECT COUNT(*) FROM auth_users WHERE student_id = :student_id");
+//     query.bindValue(":student_id", studentId);
+
+//     if (!query.exec() || !query.next()) {
+//         QMessageBox::critical(this, "Database Error", "Failed to check existing user: " + query.lastError().text());
+//         return;
+//     }
+
+//     if (query.value(0).toInt() > 0) {
+//         QMessageBox::warning(this, "Duplicate Entry", "Login credentials already exist for this student.");
+//         return;
+//     }
+
+//     // Hash the password using QCryptographicHash
+//     QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
+
+//     // Insert the new login credentials into the database
+//     query.prepare("INSERT INTO auth_users (student_id, username, password_hash, role) "
+//                   "VALUES (:student_id, :username, :password_hash, 'Student')");
+//     query.bindValue(":student_id", studentId);
+//     query.bindValue(":username", username);
+//     query.bindValue(":password_hash", passwordHash.toHex()); // Store the hashed password as a hex string
+
+//     if (!query.exec()) {
+//         QMessageBox::critical(this, "Database Error", "Failed to add the student's login credentials: " + query.lastError().text());
+//         return;
+//     }
+
+//     // Success feedback
+//     QMessageBox::information(this, "Success", "Login credentials added successfully!");
+
+//     // Clear the input fields
+//     ui->lineEdit_PL_username->clear();
+//     ui->lineEdit_PL_password->clear();
+// }
+
+
 void mainApplication::on_pushButton_AddLogin_clicked()
 {
-    // Get the selected student name from the ComboBox
     QString studentName = ui->comboBox_PL_StudentChoose->currentText();
     QString username = ui->lineEdit_PL_username->text();
     QString plainPassword = ui->lineEdit_PL_password->text();
@@ -1863,8 +1925,9 @@ void mainApplication::on_pushButton_AddLogin_clicked()
         return;
     }
 
-    // Retrieve the student_id based on the selected student name
     QSqlQuery query;
+
+    // Retrieve the student_id based on the selected student name
     query.prepare("SELECT id FROM people WHERE CONCAT(first_name, ' ', last_name) = :studentName AND type = 'S'");
     query.bindValue(":studentName", studentName);
 
@@ -1884,31 +1947,35 @@ void mainApplication::on_pushButton_AddLogin_clicked()
         return;
     }
 
-    if (query.value(0).toInt() > 0) {
-        QMessageBox::warning(this, "Duplicate Entry", "Login credentials already exist for this student.");
-        return;
+    bool userExists = query.value(0).toInt() > 0;
+
+    // Hash the password using the utility function
+    QString passwordHash = hashPassword(plainPassword);
+
+    if (userExists) {
+        // Update existing user
+        query.prepare("UPDATE auth_users SET username = :username, password_hash = :password_hash WHERE student_id = :student_id");
+    } else {
+        // Insert new user
+        query.prepare("INSERT INTO auth_users (student_id, username, password_hash, role) "
+                      "VALUES (:student_id, :username, :password_hash, 'Student')");
     }
 
-    // Hash the password using QCryptographicHash
-    QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
-
-    // Insert the new login credentials into the database
-    query.prepare("INSERT INTO auth_users (student_id, username, password_hash, role) "
-                  "VALUES (:student_id, :username, :password_hash, 'Student')");
     query.bindValue(":student_id", studentId);
     query.bindValue(":username", username);
-    query.bindValue(":password_hash", passwordHash.toHex()); // Store the hashed password as a hex string
+    query.bindValue(":password_hash", passwordHash);
 
     if (!query.exec()) {
-        QMessageBox::critical(this, "Database Error", "Failed to add the student's login credentials: " + query.lastError().text());
+        QMessageBox::critical(this, "Database Error", "Failed to add or update the student's login credentials: " + query.lastError().text());
         return;
     }
 
     // Success feedback
-    QMessageBox::information(this, "Success", "Login credentials added successfully!");
+    QMessageBox::information(this, "Success", userExists
+                                                  ? "Login credentials updated successfully!"
+                                                  : "Login credentials added successfully!");
 
     // Clear the input fields
     ui->lineEdit_PL_username->clear();
     ui->lineEdit_PL_password->clear();
 }
-

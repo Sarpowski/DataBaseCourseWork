@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCryptographicHash>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +17,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString  hashPassword(const QString &plainPassword) {
+        return QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256).toHex();
+    }
+    void navigateToRoleScreen(const QString &role);
 
 private slots:
     void on_pushButtonLogin_clicked();

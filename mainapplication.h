@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <qcombobox.h>
+#include <QCryptographicHash>
 
 
 
@@ -36,6 +37,13 @@ public:
     void exportToPdf();
     void exportData();
 
+
+
+
+    // Utility function to hash a password using SHA-256
+    QString hashPassword(const QString &plainPassword) {
+        return QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256).toHex();
+    }
     void saveOrUpdateMark(int studentId, int subjectId, int teacherId, int mark);
     void loadComboBoxSubjects(QComboBox* comboBox, int studentId);
     void loadComboBoxMarks(QComboBox* comboBox);
