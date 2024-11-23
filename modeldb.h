@@ -18,7 +18,7 @@ public:
     static modeldb& getInstance();
     void initDb();
     bool executeQuery(const QString& queryStr);
-    QSqlDatabase getDatabase() const;
+    QSqlDatabase getDatabase();
 
 private:
     modeldb();
