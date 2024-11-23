@@ -1,6 +1,9 @@
 #include "student.h"
 #include "ui_student.h"
 #include "modeldb.h"
+#include "mainwindow.h"
+
+
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -12,18 +15,59 @@
 #include <QFile>
 #include <QPainter>
 #include <QStyledItemDelegate>
+#include <qstandarditemmodel.h>
 
-student::student(QWidget *parent)
+
+
+student::student(MainWindow *mainWindow, QWidget *parent)
     : QWidget(parent)
+    , mainWindow_(mainWindow)
     , ui(new Ui::student)
 {
     ui->setupUi(this);
+    SloadMarks();
 }
 
 student::~student()
 {
     delete ui;
 }
+
+void student::SloadMarks() {
+
+    int userId = mainWindow_->getUserId();
+    qDebug() << "User ID at StudentHCPP: " << userId;
+    QSqlQuery query;
+    query.prepare(
+        "SELECT s.name AS subject, m.value AS grade "
+        "FROM marks m "
+        "JOIN subjects s ON m.subject_id = s.id "
+        "WHERE m.student_id = :userId"
+        );
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Database query failed:" << query.lastError().text();
+        return;
+    }
+
+    QStandardItemModel *model = new QStandardItemModel(this);
+    model->setHorizontalHeaderLabels({"Subject", "Grade"});
+
+    while (query.next()) {
+        QString subject = query.value("subject").toString();
+        int grade = query.value("grade").toInt();
+
+        QList<QStandardItem *> row;
+        row.append(new QStandardItem(subject));
+        row.append(new QStandardItem(QString::number(grade)));
+        model->appendRow(row);
+    }
+
+    ui->tableViewStudent->setModel(model);
+    ui->tableViewStudent->resizeColumnsToContents();
+}
+
 
 void student::studentExportPdf(QString& studentId) const
 {

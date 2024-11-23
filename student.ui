@@ -54,7 +54,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QListView" name="listViewStudentViewMarks"/>
+      <widget class="QTableView" name="tableViewStudent"/>
      </item>
     </layout>
    </item>
