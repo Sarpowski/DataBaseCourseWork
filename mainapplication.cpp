@@ -38,7 +38,7 @@ mainApplication::mainApplication(QWidget *parent)
     firstRun_ = true;
 
     modeldb& db = modeldb::getInstance();
-    db.initDb();
+   // db.initDb(); //if sanity test wont pass use this
 
     initMainAppTableView(db);
     loadSubjectsWithTeachers();

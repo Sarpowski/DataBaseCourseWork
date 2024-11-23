@@ -2,7 +2,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-
+#include "modeldb.h"
 
 
 #include <QSqlDatabase>
@@ -17,17 +17,19 @@ void connectToDatabase();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    modeldb &dbInstance = modeldb::getInstance();
+    dbInstance.initDb();
 
     //Login Screen
     MainWindow w;
-   w.show();
+    w.show();
 
     //Application Screen
    // mainApplication *mainWindow = new mainApplication;
    // mainWindow->show();
 
     //DataBase Test
-    connectToDatabase();
+  // connectToDatabase();
     return a.exec();
 }
 void connectToDatabase() {
