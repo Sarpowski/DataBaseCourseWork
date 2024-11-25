@@ -296,6 +296,12 @@
 	"HEADERS" : 
 	[
 		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/customdialog.h",
+			"MU",
+			"EWIEGA46WW/moc_customdialog.cpp",
+			null
+		],
+		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.h",
 			"MU",
 			"EWIEGA46WW/moc_mainapplication.cpp",
@@ -311,6 +317,12 @@
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h",
 			"MU",
 			"EWIEGA46WW/moc_modeldb.cpp",
+			null
+		],
+		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.h",
+			"MU",
+			"EWIEGA46WW/moc_student.cpp",
 			null
 		]
 	],
@@ -389,6 +401,11 @@
 	"SOURCES" : 
 	[
 		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/customdialog.cpp",
+			"MU",
+			null
+		],
+		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/main.cpp",
 			"MU",
 			null
@@ -405,6 +422,11 @@
 		],
 		[
 			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.cpp",
 			"MU",
 			null
 		]

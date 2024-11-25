@@ -104,6 +104,9 @@ private slots:
 
     void on_pushButton_AddLogin_clicked();
 
+
+    void on_pushButton_AddConfig_clicked();
+
 private:
     bool firstRun_ ;
     Ui::mainApplication *ui;

@@ -1,5 +1,6 @@
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/EWIEGA46WW/moc_student.cpp: C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.h \
   C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/moc_predefs.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/QCryptographicHash \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20iterator.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20memory.h \
@@ -31,6 +32,7 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontainerinfo.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontainertools_impl.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontiguouscache.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/qcryptographichash.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdarwinhelpers.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdatastream.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdebug.h \
@@ -149,7 +151,9 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtGui/qvalidator.h \
   C:/Qt/6.8.0/mingw_64/include/QtGui/qwindowdefs.h \
   C:/Qt/6.8.0/mingw_64/include/QtGui/qwindowdefs_win.h \
+  C:/Qt/6.8.0/mingw_64/include/QtWidgets/QComboBox \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/QDialog \
+  C:/Qt/6.8.0/mingw_64/include/QtWidgets/QMainWindow \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/QWidget \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qabstractbutton.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qabstractitemdelegate.h \
@@ -162,6 +166,7 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qgridlayout.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qlayout.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qlayoutitem.h \
+  C:/Qt/6.8.0/mingw_64/include/QtWidgets/qmainwindow.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qpushbutton.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qrubberband.h \
   C:/Qt/6.8.0/mingw_64/include/QtWidgets/qsizepolicy.h \
@@ -380,4 +385,5 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/time.h \
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/vadefs.h \
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h \
-  C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/customdialog.h
+  C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/customdialog.h \
+  C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h

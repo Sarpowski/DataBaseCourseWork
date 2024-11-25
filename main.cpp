@@ -9,16 +9,32 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <qfiledialog.h>
 
 
 void connectToDatabase();
+QString init()
+{
+        QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
 
+    return targetFilePath;
+}
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    modeldb &dbInstance = modeldb::getInstance();
-    dbInstance.initDb();
+
+    QString configFilePath = init();
+
+
+    // Initialize the database with the selected configuration file
+    modeldb& dbInstance = modeldb::getInstance();
+    dbInstance.initDb(configFilePath);
+
+
+
+   // modeldb &dbInstance = modeldb::getInstance();
+
 
     //Login Screen
     MainWindow w;

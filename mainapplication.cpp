@@ -1979,3 +1979,47 @@ void mainApplication::on_pushButton_AddLogin_clicked()
     ui->lineEdit_PL_username->clear();
     ui->lineEdit_PL_password->clear();
 }
+
+void mainApplication::on_pushButton_AddConfig_clicked()
+{
+    QString configFilePath = QFileDialog::getOpenFileName(
+        nullptr,
+        "Select Database Configuration File",
+        QCoreApplication::applicationDirPath(),
+        "INI Files (*.ini);;All Files (*)"
+        );
+
+    // Check if the user canceled the dialog
+    if (configFilePath.isEmpty()) {
+        qDebug() << "No configuration file selected. Exiting...";
+        return;
+    }
+
+    QString targetFilePath = QCoreApplication::applicationDirPath() + "/main.ini";
+
+    QFile sourceFile(configFilePath);
+    QFile targetFile(targetFilePath);
+
+    // Open the source file for reading
+    if (!sourceFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open source file for reading:" << configFilePath;
+        return;
+    }
+
+    // Open the target file for writing
+    if (!targetFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Failed to open target file for writing:" << targetFilePath;
+        return;
+    }
+
+    // Copy the contents of the source file to the target file
+    QByteArray fileContents = sourceFile.readAll();
+    targetFile.write(fileContents);
+
+    // Close both files
+    sourceFile.close();
+    targetFile.close();
+
+    qDebug() << "Configuration file copied successfully to:" << targetFilePath;
+}
+

@@ -1,5 +1,6 @@
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/EWIEGA46WW/moc_mainwindow.cpp: C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h \
   C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/moc_predefs.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/QCryptographicHash \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20iterator.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/q20memory.h \
@@ -30,6 +31,7 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinG
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontainerinfo.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontainertools_impl.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qcontiguouscache.h \
+  C:/Qt/6.8.0/mingw_64/include/QtCore/qcryptographichash.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdarwinhelpers.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdatastream.h \
   C:/Qt/6.8.0/mingw_64/include/QtCore/qdebug.h \
