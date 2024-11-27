@@ -1424,6 +1424,78 @@ void mainApplication::on_pushButton_ViewGrades_clicked()
 
 void mainApplication::on_pushButton_ExportData_clicked()
 {
+    // modeldb& db = modeldb::getInstance();
+
+    // // Get the selected user type from the combo box
+    // QString userType = ui->comboBox_ExportData->currentText();
+    // if (userType.isEmpty()) {
+    //     QMessageBox::warning(this, "Input Error", "Please select a user type (Students or Staff).");
+    //     return;
+    // }
+
+    // QString type = (userType == "Students") ? "S" : "P";
+
+    // QSqlQuery query(db.getDatabase());
+    // query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
+    //               "p.father_name AS FatherName, "
+    //               "COALESCE(g.name, 'N/A') AS GroupName "
+    //               "FROM people p "
+    //               "LEFT JOIN groups g ON p.group_id = g.id "
+    //               "WHERE p.type = :type "
+    //               "ORDER BY p.first_name");
+    // query.bindValue(":type", type);
+
+    // if (!query.exec()) {
+    //     QMessageBox::warning(this, "Database Error", "Failed to fetch data: " + query.lastError().text());
+    //     return;
+    // }
+
+    // QString fileName = QFileDialog::getSaveFileName(this, "Save PDF File", "", "PDF Files (*.pdf)");
+    // if (fileName.isEmpty()) {
+    //     QMessageBox::information(this, "Cancelled", "Export cancelled.");
+    //     return;
+    // }
+
+    // // Create the PDF
+    // QPdfWriter pdfWriter(fileName);
+    // pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+    // pdfWriter.setResolution(300);
+
+    // QPainter painter(&pdfWriter);
+    // QFont font;
+    // font.setPointSize(10);
+    // painter.setFont(font);
+
+    // int x = 200;
+    // int y = 200;
+    // int lineHeight = 100;
+
+    // // Write headers
+    // painter.drawText(x, y, "Name");
+    // painter.drawText(x + 400, y, "Father Name");
+    // painter.drawText(x + 800, y, "Group");
+    // y += lineHeight;
+
+    // // Write data
+    // while (query.next()) {
+    //     QString name = query.value("Name").toString();
+    //     QString fatherName = query.value("FatherName").toString();
+    //     QString group = query.value("Group").toString();
+
+    //     painter.drawText(x, y + 50, name);
+    //     painter.drawText(x + 400, y + 50, fatherName);
+    //     painter.drawText(x + 800, y + 50, group);
+    //     y += lineHeight;
+
+    //     //add new page
+    //     if (y > pdfWriter.height() - 100) {
+    //         pdfWriter.newPage();
+    //         y = 100;
+    //     }
+    // }
+
+    // painter.end();
+    // QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
     modeldb& db = modeldb::getInstance();
 
     // Get the selected user type from the combo box
@@ -1433,7 +1505,22 @@ void mainApplication::on_pushButton_ExportData_clicked()
         return;
     }
 
-    QString type = (userType == "Students") ? "S" : "P";
+    QString type = (userType == "students") ? "S" : "P";
+
+
+
+
+
+    // QSqlQuery query(db.getDatabase());
+    // query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
+    //               "p.father_name AS FatherName, "
+    //               "COALESCE(g.name, 'N/A') AS GroupName "
+    //               "FROM people p "
+    //               "LEFT JOIN groups g ON p.group_id = g.id "
+    //               "WHERE p.type = 'S' " // Ensure only students are fetched
+    //               "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
+    // // Order by group and name
+    // query.bindValue(":type", type);
 
     QSqlQuery query(db.getDatabase());
     query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
@@ -1441,8 +1528,8 @@ void mainApplication::on_pushButton_ExportData_clicked()
                   "COALESCE(g.name, 'N/A') AS GroupName "
                   "FROM people p "
                   "LEFT JOIN groups g ON p.group_id = g.id "
-                  "WHERE p.type = :type "
-                  "ORDER BY p.first_name");
+                  "WHERE p.type = :type " // Use dynamic type selection
+                  "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
     query.bindValue(":type", type);
 
     if (!query.exec()) {
@@ -1480,17 +1567,22 @@ void mainApplication::on_pushButton_ExportData_clicked()
     while (query.next()) {
         QString name = query.value("Name").toString();
         QString fatherName = query.value("FatherName").toString();
-        QString group = query.value("Group").toString();
+        QString group = query.value("GroupName").toString();
 
-        painter.drawText(x, y + 50, name);
-        painter.drawText(x + 400, y + 50, fatherName);
-        painter.drawText(x + 800, y + 50, group);
+        painter.drawText(x, y, name);
+        painter.drawText(x + 400, y, fatherName);
+        painter.drawText(x + 800, y, group);
         y += lineHeight;
 
-        //add new page
+        // Add new page if necessary
         if (y > pdfWriter.height() - 100) {
             pdfWriter.newPage();
-            y = 100;
+            y = 200; // Reset y to the starting point
+            // Redraw headers for the new page
+            painter.drawText(x, y, "Name");
+            painter.drawText(x + 400, y, "Father Name");
+            painter.drawText(x + 800, y, "Group");
+            y += lineHeight;
         }
     }
 
