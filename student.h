@@ -19,9 +19,12 @@ public:
     ~student();
     void SloadMarks();
     int getUserId() const;
-    void studentExportPdf() ;
+    void studentExportPdf();
+    void studentExportCsv();
 private slots:
     void on_pushButton_StudentExportMarks_clicked();
+
+    void on_pushButtonStudentExit_clicked();
 
 private:
     Ui::student *ui;
