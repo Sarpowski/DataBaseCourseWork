@@ -33,8 +33,8 @@ public:
     void loadSubject();
     void loadGrades();
     void loadSubjectsWithTeachers();
-    void exportToCsv();
-    void exportToPdf();
+    void exportToCsv(QString type);
+    void exportToPdf(QString type);
     void exportData();
 
 

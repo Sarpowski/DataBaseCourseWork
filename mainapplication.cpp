@@ -1061,6 +1061,152 @@ void mainApplication::loadSubjectsWithTeachers()
     }
 }
 
+void mainApplication::exportToCsv(QString type)
+{
+    modeldb& db = modeldb::getInstance();
+
+    // // Get the selected user type from the combo box
+    // QString userType = ui->comboBox_ExportData->currentText();
+    // if (userType.isEmpty()) {
+    //     QMessageBox::warning(this, "Input Error", "Please select a user type (Students or Staff).");
+    //     return;
+    // }
+
+    // QString type = (userType == "students") ? "S" : "P";
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
+                  "p.father_name AS FatherName, "
+                  "COALESCE(g.name, 'N/A') AS GroupName "
+                  "FROM people p "
+                  "LEFT JOIN groups g ON p.group_id = g.id "
+                  "WHERE p.type = :type " // Use dynamic type selection
+                  "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch data: " + query.lastError().text());
+        return;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save CSV File", "", "CSV Files (*.csv)");
+    if (fileName.isEmpty()) {
+        QMessageBox::information(this, "Cancelled", "Export cancelled.");
+        return;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "File Error", "Failed to create the CSV file.");
+        return;
+    }
+
+    QTextStream out(&file);
+
+    // Write headers
+    out << "Name,Father Name,Group\n";
+
+    // Write data
+    while (query.next()) {
+        QString name = query.value("Name").toString();
+        QString fatherName = query.value("FatherName").toString();
+        QString group = query.value("GroupName").toString();
+
+        // Write to the CSV file in comma-separated format
+        out << "\"" << name << "\","
+            << "\"" << fatherName << "\","
+            << "\"" << group << "\"\n";
+    }
+
+    file.close();
+
+    QMessageBox::information(this, "Success", "Data exported to CSV successfully.");
+}
+
+void mainApplication::exportToPdf(QString type)
+{
+    modeldb& db = modeldb::getInstance();
+
+    // // Get the selected user type from the combo box
+    // QString userType = ui->comboBox_ExportData->currentText();
+    // if (userType.isEmpty()) {
+    //     QMessageBox::warning(this, "Input Error", "Please select a user type (Students or Staff).");
+    //     return;
+    // }
+
+    // QString type = (userType == "students") ? "S" : "P";
+
+
+
+
+    QSqlQuery query(db.getDatabase());
+    query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
+                  "p.father_name AS FatherName, "
+                  "COALESCE(g.name, 'N/A') AS GroupName "
+                  "FROM people p "
+                  "LEFT JOIN groups g ON p.group_id = g.id "
+                  "WHERE p.type = :type " // Use dynamic type selection
+                  "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        QMessageBox::warning(this, "Database Error", "Failed to fetch data: " + query.lastError().text());
+        return;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save PDF File", "", "PDF Files (*.pdf)");
+    if (fileName.isEmpty()) {
+        QMessageBox::information(this, "Cancelled", "Export cancelled.");
+        return;
+    }
+
+    // Create the PDF
+    QPdfWriter pdfWriter(fileName);
+    pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+    pdfWriter.setResolution(300);
+
+    QPainter painter(&pdfWriter);
+    QFont font;
+    font.setPointSize(10);
+    painter.setFont(font);
+
+    int x = 200;
+    int y = 200;
+    int lineHeight = 100;
+
+    // Write headers
+    painter.drawText(x, y, "Name");
+    painter.drawText(x + 400, y, "Father Name");
+    painter.drawText(x + 800, y, "Group");
+    y += lineHeight;
+
+    // Write data
+    while (query.next()) {
+        QString name = query.value("Name").toString();
+        QString fatherName = query.value("FatherName").toString();
+        QString group = query.value("GroupName").toString();
+
+        painter.drawText(x, y, name);
+        painter.drawText(x + 400, y, fatherName);
+        painter.drawText(x + 800, y, group);
+        y += lineHeight;
+
+        // Add new page if necessary
+        if (y > pdfWriter.height() - 100) {
+            pdfWriter.newPage();
+            y = 200; // Reset y to the starting point
+            // Redraw headers for the new page
+            painter.drawText(x, y, "Name");
+            painter.drawText(x + 400, y, "Father Name");
+            painter.drawText(x + 800, y, "Group");
+            y += lineHeight;
+        }
+    }
+
+    painter.end();
+    QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
+}
+
 
 
 void mainApplication::loadComboBoxSubjects(QComboBox *comboBox, int studentId)
@@ -1424,78 +1570,7 @@ void mainApplication::on_pushButton_ViewGrades_clicked()
 
 void mainApplication::on_pushButton_ExportData_clicked()
 {
-    // modeldb& db = modeldb::getInstance();
 
-    // // Get the selected user type from the combo box
-    // QString userType = ui->comboBox_ExportData->currentText();
-    // if (userType.isEmpty()) {
-    //     QMessageBox::warning(this, "Input Error", "Please select a user type (Students or Staff).");
-    //     return;
-    // }
-
-    // QString type = (userType == "Students") ? "S" : "P";
-
-    // QSqlQuery query(db.getDatabase());
-    // query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
-    //               "p.father_name AS FatherName, "
-    //               "COALESCE(g.name, 'N/A') AS GroupName "
-    //               "FROM people p "
-    //               "LEFT JOIN groups g ON p.group_id = g.id "
-    //               "WHERE p.type = :type "
-    //               "ORDER BY p.first_name");
-    // query.bindValue(":type", type);
-
-    // if (!query.exec()) {
-    //     QMessageBox::warning(this, "Database Error", "Failed to fetch data: " + query.lastError().text());
-    //     return;
-    // }
-
-    // QString fileName = QFileDialog::getSaveFileName(this, "Save PDF File", "", "PDF Files (*.pdf)");
-    // if (fileName.isEmpty()) {
-    //     QMessageBox::information(this, "Cancelled", "Export cancelled.");
-    //     return;
-    // }
-
-    // // Create the PDF
-    // QPdfWriter pdfWriter(fileName);
-    // pdfWriter.setPageSize(QPageSize(QPageSize::A4));
-    // pdfWriter.setResolution(300);
-
-    // QPainter painter(&pdfWriter);
-    // QFont font;
-    // font.setPointSize(10);
-    // painter.setFont(font);
-
-    // int x = 200;
-    // int y = 200;
-    // int lineHeight = 100;
-
-    // // Write headers
-    // painter.drawText(x, y, "Name");
-    // painter.drawText(x + 400, y, "Father Name");
-    // painter.drawText(x + 800, y, "Group");
-    // y += lineHeight;
-
-    // // Write data
-    // while (query.next()) {
-    //     QString name = query.value("Name").toString();
-    //     QString fatherName = query.value("FatherName").toString();
-    //     QString group = query.value("Group").toString();
-
-    //     painter.drawText(x, y + 50, name);
-    //     painter.drawText(x + 400, y + 50, fatherName);
-    //     painter.drawText(x + 800, y + 50, group);
-    //     y += lineHeight;
-
-    //     //add new page
-    //     if (y > pdfWriter.height() - 100) {
-    //         pdfWriter.newPage();
-    //         y = 100;
-    //     }
-    // }
-
-    // painter.end();
-    // QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
     modeldb& db = modeldb::getInstance();
 
     // Get the selected user type from the combo box
@@ -1509,85 +1584,47 @@ void mainApplication::on_pushButton_ExportData_clicked()
 
 
 
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Choose Export Format");
+    msgBox.setText("How would you like to export the data?");
+    QPushButton* pdfButton = msgBox.addButton("Export as PDF", QMessageBox::AcceptRole);
+    QPushButton* csvButton = msgBox.addButton("Export as CSV", QMessageBox::AcceptRole);
+    QPushButton* cancelButton = msgBox.addButton("Cancel", QMessageBox::RejectRole);
 
+    msgBox.exec();
 
-    // QSqlQuery query(db.getDatabase());
-    // query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
-    //               "p.father_name AS FatherName, "
-    //               "COALESCE(g.name, 'N/A') AS GroupName "
-    //               "FROM people p "
-    //               "LEFT JOIN groups g ON p.group_id = g.id "
-    //               "WHERE p.type = 'S' " // Ensure only students are fetched
-    //               "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
-    // // Order by group and name
-    // query.bindValue(":type", type);
-
-    QSqlQuery query(db.getDatabase());
-    query.prepare("SELECT p.first_name || ' ' || p.last_name AS Name, "
-                  "p.father_name AS FatherName, "
-                  "COALESCE(g.name, 'N/A') AS GroupName "
-                  "FROM people p "
-                  "LEFT JOIN groups g ON p.group_id = g.id "
-                  "WHERE p.type = :type " // Use dynamic type selection
-                  "ORDER BY g.name, p.first_name, p.last_name"); // Sort by group and name
-    query.bindValue(":type", type);
-
-    if (!query.exec()) {
-        QMessageBox::warning(this, "Database Error", "Failed to fetch data: " + query.lastError().text());
-        return;
-    }
-
-    QString fileName = QFileDialog::getSaveFileName(this, "Save PDF File", "", "PDF Files (*.pdf)");
-    if (fileName.isEmpty()) {
+    if (msgBox.clickedButton() == cancelButton) {
         QMessageBox::information(this, "Cancelled", "Export cancelled.");
         return;
     }
 
-    // Create the PDF
-    QPdfWriter pdfWriter(fileName);
-    pdfWriter.setPageSize(QPageSize(QPageSize::A4));
-    pdfWriter.setResolution(300);
-
-    QPainter painter(&pdfWriter);
-    QFont font;
-    font.setPointSize(10);
-    painter.setFont(font);
-
-    int x = 200;
-    int y = 200;
-    int lineHeight = 100;
-
-    // Write headers
-    painter.drawText(x, y, "Name");
-    painter.drawText(x + 400, y, "Father Name");
-    painter.drawText(x + 800, y, "Group");
-    y += lineHeight;
-
-    // Write data
-    while (query.next()) {
-        QString name = query.value("Name").toString();
-        QString fatherName = query.value("FatherName").toString();
-        QString group = query.value("GroupName").toString();
-
-        painter.drawText(x, y, name);
-        painter.drawText(x + 400, y, fatherName);
-        painter.drawText(x + 800, y, group);
-        y += lineHeight;
-
-        // Add new page if necessary
-        if (y > pdfWriter.height() - 100) {
-            pdfWriter.newPage();
-            y = 200; // Reset y to the starting point
-            // Redraw headers for the new page
-            painter.drawText(x, y, "Name");
-            painter.drawText(x + 400, y, "Father Name");
-            painter.drawText(x + 800, y, "Group");
-            y += lineHeight;
-        }
+    if (msgBox.clickedButton() == pdfButton) {
+        exportToPdf(type);
+    } else if (msgBox.clickedButton() == csvButton) {
+        exportToCsv(type);
     }
 
-    painter.end();
-    QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
+
+
+
+
+    // Prompt the user to choose export format
+    // QMessageBox::StandardButton reply;
+    // reply = QMessageBox::question(this, "Choose Export Format",
+    //                               "Do you want to export as PDF or CSV?",
+    //                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+    //                               QMessageBox::Cancel);
+
+    // if (reply == QMessageBox::Cancel) {
+    //     QMessageBox::information(this, "Cancelled", "Export cancelled.");
+    //     return;
+    // }
+
+    // if (reply == QMessageBox::Yes) {
+    //     exportToPdf(type);
+    // } else if (reply == QMessageBox::No) {
+    //     exportToCsv(type);
+    // }
 
 }
 

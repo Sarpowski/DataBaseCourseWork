@@ -793,6 +793,7 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h
  mdp:C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h
  mdp:C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/CourseWorkDB_autogen/moc_predefs.h
  mdp:C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.h
  mmc:Q_OBJECT
  mdp:C:/Qt/6.8.0/mingw_64/include/QtCore/QCryptographicHash
@@ -1184,9 +1185,8 @@ C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.h
  mdp:C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/customdialog.h
  mdp:C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.h
  mdp:C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/student.h
-C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.h
-C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.cpp
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/main.cpp
+C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/modeldb.cpp
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainapplication.cpp
  uic:ui_mainapplication.h
 C:/Users/Can/Desktop/dataBaseCourseWork/CourseWorkDB/mainwindow.cpp
