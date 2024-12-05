@@ -62,7 +62,7 @@ mainApplication::mainApplication(QWidget *parent)
     connect(ui->pushButtonStudentEdit, &QPushButton::clicked, this, &mainApplication::editStudent);
 
     // In mainApplication constructor or setupUi
-    connect(ui->pushButton_MarkView, &QPushButton::clicked,
+    connect(ui->pushButton_2, &QPushButton::clicked,
             this, &mainApplication::on_pushButtonLoadTable_clicked);
 }
 
@@ -405,7 +405,7 @@ void mainApplication::loadGrades()
 
     //model->setQuery(std::move(query));
     // Use std::move to transfer ownership of the query
-    model->setQuery(query);
+    model->setQuery(std::move(query));
 
     // Check for query execution errors after setQuery
     if (model->lastError().isValid()) {
@@ -1002,7 +1002,7 @@ void mainApplication::loadSubjectsWithTeachers()
         return;
     }
 
-    model->setQuery(query);
+    model->setQuery(std::move(query));
 
     model->setHeaderData(0, Qt::Horizontal, "Subject ID");
     model->setHeaderData(1, Qt::Horizontal, "Subject");
@@ -1536,7 +1536,7 @@ void mainApplication::on_pushButton_MarkView_clicked()
         return;
     }
 
-    model->setQuery(query);
+    model->setQuery(std::move(query));
 
     model->setHeaderData(0, Qt::Horizontal, "Mark ID");
     model->setHeaderData(1, Qt::Horizontal, "Student Name");

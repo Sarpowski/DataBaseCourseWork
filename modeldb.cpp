@@ -1,5 +1,7 @@
 #include "modeldb.h"
 
+#include <QCoreApplication>
+
 
 
 
@@ -16,8 +18,8 @@ modeldb &modeldb::getInstance()
 void modeldb::initDb(const QString& configFilePath)
 {
 
-    QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
-
+    //QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
+    QString targetFilePath = QCoreApplication::applicationDirPath() + "/main.ini";
     QFile configFile(targetFilePath);
     if (!configFile.exists()) {
         qDebug() << "Error: Configuration file not found:" << configFilePath;
