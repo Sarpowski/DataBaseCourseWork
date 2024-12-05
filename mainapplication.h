@@ -40,10 +40,9 @@ public:
 
 
 
-    // Utility function to hash a password using SHA-256
-    QString hashPassword(const QString &plainPassword) {
-        return QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256).toHex();
-    }
+    //hash password using SHA-256
+    QString hashPassword(const QString &plainPassword);
+
     void saveOrUpdateMark(int studentId, int subjectId, int teacherId, int mark);
     void loadComboBoxSubjects(QComboBox* comboBox, int studentId);
     void loadComboBoxMarks(QComboBox* comboBox);

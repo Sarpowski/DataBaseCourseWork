@@ -14,16 +14,15 @@
 
 void connectToDatabase();
 QString init()
-{
-        QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
 
+{
+    QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
     return targetFilePath;
 }
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
     QString configFilePath = init();
 
 
@@ -37,15 +36,16 @@ int main(int argc, char *argv[])
 
 
     //Login Screen
-    MainWindow w;
-    w.show();
+   // MainWindow w;
+    //w.show();
 
     //Application Screen
-   // mainApplication *mainWindow = new mainApplication;
-   // mainWindow->show();
+    mainApplication *mainWindow = new mainApplication;
+    mainWindow->show();
 
     //DataBase Test
-  // connectToDatabase();
+    connectToDatabase();
+
     return a.exec();
 }
 void connectToDatabase() {

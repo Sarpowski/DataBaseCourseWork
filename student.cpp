@@ -81,7 +81,7 @@ int student::getUserId() const
 
 void student::studentExportPdf()
 {
-    // Step 1: Access the database and prepare the query
+
     modeldb& db = modeldb::getInstance();
     QSqlDatabase database = db.getDatabase();
 
@@ -114,14 +114,12 @@ void student::studentExportPdf()
         return;
     }
 
-    // Step 2: Select file for PDF export
     QString fileName = QFileDialog::getSaveFileName(this, "Save PDF File", "", "PDF Files (*.pdf)");
     if (fileName.isEmpty()) {
         QMessageBox::information(this, "Cancelled", "Export cancelled.");
         return;
     }
 
-    // Step 3: Create the PDF
     QPdfWriter pdfWriter(fileName);
     pdfWriter.setPageSize(QPageSize(QPageSize::A4));
     pdfWriter.setResolution(300);
@@ -131,8 +129,8 @@ void student::studentExportPdf()
     font.setPointSize(10);
     painter.setFont(font);
 
-    int x = 200;       // X-axis starting position
-    int y = 200;       // Y-axis starting position
+    int x = 200;
+    int y = 200;
     int lineHeight = 100;
 
     // Step 4: Write headers
@@ -143,8 +141,7 @@ void student::studentExportPdf()
     painter.drawText(x + 1600, y, "Mark");
     y += lineHeight;
 
-    // Step 5: Write data rows
-    QString currentStudent; // Track the current student to avoid duplicating headers
+    QString currentStudent;
     while (query.next()) {
         QString name = query.value("Name").toString();
         QString fatherName = query.value("FatherName").toString();
@@ -153,9 +150,8 @@ void student::studentExportPdf()
         QString mark = query.value("Mark").toString();
 
         if (name != currentStudent) {
-            // Write a new student's details
             currentStudent = name;
-            y += lineHeight; // Add spacing before the next student
+            y += lineHeight; // Add spacing
             painter.drawText(x, y, name);
             painter.drawText(x + 400, y, fatherName);
             painter.drawText(x + 800, y, group);
@@ -169,7 +165,7 @@ void student::studentExportPdf()
         // Add a new page if necessary
         if (y > pdfWriter.height() - 100) {
             pdfWriter.newPage();
-            y = 200; // Reset Y-axis position
+            y = 200;
         }
     }
 
@@ -180,7 +176,7 @@ void student::studentExportPdf()
 
 void student::studentExportCsv()
 {
-    // Step 1: Access the database and prepare the query
+
     modeldb& db = modeldb::getInstance();
     QSqlDatabase database = db.getDatabase();
 
@@ -201,7 +197,7 @@ void student::studentExportCsv()
         "LEFT JOIN groups g ON p.group_id = g.id "
         "LEFT JOIN marks m ON m.student_id = p.id "
         "LEFT JOIN subjects s ON m.subject_id = s.id "
-        "WHERE p.type = 'S' AND p.id = :studentId " // Filter for the specific student
+        "WHERE p.type = 'S' AND p.id = :studentId "
         "ORDER BY s.name"
         );
     query.bindValue(":studentId", studentId);
@@ -211,14 +207,14 @@ void student::studentExportCsv()
         return;
     }
 
-    // Step 2: Select file for CSV export
+    //CSV export
     QString fileName = QFileDialog::getSaveFileName(this, "Save CSV File", "", "CSV Files (*.csv)");
     if (fileName.isEmpty()) {
         QMessageBox::information(this, "Cancelled", "Export cancelled.");
         return;
     }
 
-    // Step 3: Create and open the CSV file
+    //CSV file
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "File Error", "Failed to create the CSV file.");
@@ -227,11 +223,9 @@ void student::studentExportCsv()
 
     QTextStream out(&file);
 
-    // Step 4: Write headers
     out << "Name,Father Name,Group,Subject,Mark\n";
 
-    // Step 5: Write data rows
-    QString currentStudent; // Track the current student to avoid duplicating headers
+    QString currentStudent;
     while (query.next()) {
         QString name = query.value("Name").toString();
         QString fatherName = query.value("FatherName").toString();
@@ -240,17 +234,14 @@ void student::studentExportCsv()
         QString mark = query.value("Mark").toString();
 
         if (name != currentStudent) {
-            // Write a new student's details
             currentStudent = name;
             out << "\"" << name << "\","
                 << "\"" << fatherName << "\","
                 << "\"" << group << "\",";
         } else {
-            // Leave Name, Father Name, and Group empty for subsequent rows of the same student
             out << ",,,";
         }
 
-        // Write subject and mark
         out << "\"" << (subject.isEmpty() ? "N/A" : subject) << "\","
             << "\"" << (mark.isEmpty() ? "N/A" : mark) << "\"\n";
     }
@@ -268,7 +259,6 @@ void student::on_pushButton_StudentExportMarks_clicked()
     CustomDialog dialog(itemList);
     if (dialog.exec() == QDialog::Accepted)
     {
-        // take proper action here
         qDebug() << dialog.comboBox()->currentText();
     }
     QString text = dialog.comboBox()->currentText();

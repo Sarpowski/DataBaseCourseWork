@@ -17,9 +17,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QString  hashPassword(const QString &plainPassword) {
-        return QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256).toHex();
-    }
+    QString  hashPassword(const QString &plainPassword);
     void navigateToRoleScreen(const QString &role);
 
     void setUserId(int userId);

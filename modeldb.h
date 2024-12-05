@@ -11,7 +11,6 @@
 #include <QDebug>
 #include <QFile>
 #include <QSettings>
-#include <memory>
 
 
 
@@ -24,6 +23,9 @@ public:
     QSqlDatabase getDatabase();
 private:
     modeldb();
+    ~modeldb() {
+        db.close();
+    }
     modeldb(const modeldb&) = delete;
     modeldb& operator=(const modeldb&) = delete;
 

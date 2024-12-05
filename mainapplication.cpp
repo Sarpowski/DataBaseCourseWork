@@ -23,7 +23,7 @@
 #include <QStyledItemDelegate>
 #include "modeldb.h"
 
-#include <QCryptographicHash> // For password hashing
+#include <QCryptographicHash>
 
 
 
@@ -38,7 +38,7 @@ mainApplication::mainApplication(QWidget *parent)
     firstRun_ = true;
 
     modeldb& db = modeldb::getInstance();
-   // db.initDb(); //if sanity test wont pass use this
+
 
     initMainAppTableView(db);
     loadSubjectsWithTeachers();
@@ -379,6 +379,7 @@ void mainApplication::loadSubject()
 }
 void mainApplication::loadGrades()
 {
+    //bug fix maintance happens in here
     modeldb& db = modeldb::getInstance();
 
     QSqlQueryModel *model = new QSqlQueryModel(this);
@@ -402,8 +403,15 @@ void mainApplication::loadGrades()
         return;
     }
 
+    //model->setQuery(std::move(query));
+    // Use std::move to transfer ownership of the query
     model->setQuery(query);
 
+    // Check for query execution errors after setQuery
+    if (model->lastError().isValid()) {
+        qDebug() << "Query execution error:" << model->lastError().text();
+        return;
+    }
     model->setHeaderData(0, Qt::Horizontal, "Grade ID");
     model->setHeaderData(1, Qt::Horizontal, "Student");
     model->setHeaderData(2, Qt::Horizontal, "Group Name");
@@ -420,6 +428,7 @@ void mainApplication::loadGrades()
     if (query.lastError().isValid()) {
         qDebug() << "Query execution error:" << query.lastError().text();
     }
+
 }
 
 
@@ -554,8 +563,7 @@ void mainApplication::on_pushButton_DeleteGroup_clicked()
     deleteQuery.prepare("SELECT delete_group_and_students(:group_name);");
     deleteQuery.bindValue(":group_name", groupName);
     if (!deleteQuery.exec()) {
-        // qDebug() << "Failed to delete group:" << deleteQuery.lastError().text();
-        // QMessageBox::warning(this, "Database Error", "Failed to delete group.");
+
         return;
     }
 
@@ -600,29 +608,8 @@ void mainApplication::pushButton_AddGroup()
 void mainApplication::loadStudentNamesComboBox(QComboBox* comboBox) {
     modeldb& db = modeldb::getInstance();
 
-    // // Clear the combo box before populating
-    // ui->MA_comboBox_EditStudent->clear();
 
-    // // Add a default "Select a student" item
-    // ui->MA_comboBox_EditStudent->addItem("Select a student");
-
-    // // Query to fetch student names and IDs
-    // QSqlQuery query(db.getDatabase());
-    // query.prepare("SELECT id, first_name, last_name FROM people WHERE type = 'S' ORDER BY first_name");
-
-    // if (query.exec()) {
-    //     while (query.next()) {
-    //         QString studentId = query.value(0).toString();
-    //         QString studentName = query.value(1).toString() + " " + query.value(2).toString();
-    //         // Add student ID and name to the combo box
-    //         ui->MA_comboBox_EditStudent->addItem(studentName, studentId);
-    //     }
-    // } else {
-    //     QMessageBox::warning(this, "Database Error", "Failed to load student names: " + query.lastError().text());
-    // }
-
-    // Clear the combo box before populating
-   comboBox ->clear();
+   comboBox->clear();
 
     // Add a default "Select a student" item
     comboBox->addItem("Select a student");
@@ -814,35 +801,7 @@ void mainApplication::on_pushButton_SubjectAdd_clicked()
         QMessageBox::warning(this, "Database Error", "Failed to update Subject: " + query.lastError().text());
     }
 
-}/*
-void mainApplication::on_pushButton_SubjectDelete_clicked()
-{
-    int currentIndex = ui->comboBox_Subject->currentIndex();
-    if (currentIndex <= 0) { // İlk öğe "Select a Subject" için
-        QMessageBox::warning(this, "Input Error", "Please select a valid subject to delete.");
-        return;
-    }
-
-    QVariant subjectId = ui->comboBox_Subject->currentData();
-    if (!subjectId.isValid()) {
-        QMessageBox::warning(this, "Selection Error", "Could not retrieve the selected subject.");
-        return;
-    }
-
-    modeldb& db = modeldb::getInstance();
-    QSqlQuery query(db.getDatabase());
-
-    query.prepare("DELETE FROM subjects WHERE id = :subjectId");
-    query.bindValue(":subjectId", subjectId);
-
-    if (query.exec()) {
-        QMessageBox::information(this, "Success", "Subject deleted successfully.");
-        loadSubject();
-        loadSubjectsWithTeachers();
-    } else {
-        QMessageBox::warning(this, "Database Error", "Failed to delete the subject: " + query.lastError().text());
-    }
-}*/
+}
 
 void mainApplication::on_pushButton_SubjectDelete_clicked()
 {
@@ -1207,6 +1166,11 @@ void mainApplication::exportToPdf(QString type)
     QMessageBox::information(this, "Success", "Data exported to PDF successfully.");
 }
 
+QString mainApplication::hashPassword(const QString &plainPassword)
+{
+    return QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256).toHex();
+}
+
 
 
 void mainApplication::loadComboBoxSubjects(QComboBox *comboBox, int studentId)
@@ -1326,27 +1290,6 @@ void mainApplication::loadComboBoxStudents(QComboBox *comboBox)
 
 
 
-// void mainApplication::loadComboBoxGroupForMark()
-// {
-//     modeldb& db = modeldb::getInstance();
-
-//     ui->comboBox_MarkSelectGroup->clear();
-//     ui->comboBox_MarkSelectGroup->addItem("Select a Group", QVariant()); // Placeholder item
-
-//     QSqlQuery query(db.getDatabase());
-//     query.prepare("SELECT id, name FROM groups ORDER BY name");
-
-//     if (query.exec()) {
-//         while (query.next()) {
-//             int groupId = query.value(0).toInt();
-//             QString groupName = query.value(1).toString();
-//             ui->comboBox_MarkSelectGroup->addItem(groupName, groupId);
-//         }
-//     } else {
-//         QMessageBox::warning(this, "Database Error", "Failed to load groups: " + query.lastError().text());
-//     }
-
-// }
 
 
 void mainApplication::loadComboBoxGroupForMark(QComboBox* comboBox, const QString& placeholderText)
@@ -1396,52 +1339,6 @@ void mainApplication::loadComboBoxSubjectsForMark()
     }
 }
 
-
-// void mainApplication::on_pushButton_AssignGroup_clicked()
-// {
-//     modeldb& db = modeldb::getInstance();
-
-
-//     QSqlQuery query(db.getDatabase());
-//     ui->comboBox_Subject->clear();
-//     if (query.exec("SELECT name FROM groups")) {
-//         while (query.next()) {
-//             ui->comboBox_Subject->addItem(query.value(0).toString());
-//         }
-//     } else {
-//         qDebug() << "Failed to load groups:" << query.lastError().text();
-//     }
-
-//     // Get selected group name
-//     QString groupName = ui->comboBox_Subject->currentText();
-//     qDebug() << "Selected group name:" << groupName;
-
-//     if (groupName.isEmpty() || groupName == "Select a Group") {
-//         QMessageBox::warning(this, "Input Error", "Please select a valid group.");
-//         return;
-//     }
-
-//     // Fetch group ID
-//     QSqlQuery groupQuery(db.getDatabase());
-//     groupQuery.prepare("SELECT id FROM groups WHERE name = :groupName");
-//     groupQuery.bindValue(":groupName", groupName);
-
-//     if (!groupQuery.exec()) {
-//         QMessageBox::warning(this, "Database Error", "Failed to execute query: " + groupQuery.lastError().text());
-//         return;
-//     }
-
-//     if (!groupQuery.next()) {
-//         QMessageBox::warning(this, "Input Error", "Group not found. Please check the selected group name.");
-//         return;
-//     }
-
-//     int groupId = groupQuery.value(0).toInt();
-//     qDebug() << "Group ID:" << groupId;
-
-//     // Continue with assigning the subject to students in this group
-//     // ...
-// }
 
 
 void mainApplication::on_pushButton_AssignGroup_clicked()
@@ -1604,288 +1501,16 @@ void mainApplication::on_pushButton_ExportData_clicked()
         exportToCsv(type);
     }
 
-
-
-
-
-    // Prompt the user to choose export format
-    // QMessageBox::StandardButton reply;
-    // reply = QMessageBox::question(this, "Choose Export Format",
-    //                               "Do you want to export as PDF or CSV?",
-    //                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
-    //                               QMessageBox::Cancel);
-
-    // if (reply == QMessageBox::Cancel) {
-    //     QMessageBox::information(this, "Cancelled", "Export cancelled.");
-    //     return;
-    // }
-
-    // if (reply == QMessageBox::Yes) {
-    //     exportToPdf(type);
-    // } else if (reply == QMessageBox::No) {
-    //     exportToCsv(type);
-    // }
-
 }
 
-// void mainApplication::on_pushButton_MarkView_clicked()
-// {
-
-//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
-//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
-
-//     if (!groupId.isValid() || !subjectId.isValid()) {
-//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
-//         return;
-//     }
-
-//     modeldb& db = modeldb::getInstance();
-
-//     // Create a QSqlQueryModel to display the results in the QTableView
-//     QSqlQueryModel *model = new QSqlQueryModel(this);
-
-//     // Prepare and execute the SQL query
-//     QSqlQuery query(db.getDatabase());
-//     query.prepare(R"(
-//     SELECT p.id AS Student_ID,
-//            p.first_name || ' ' || p.last_name AS Student_Name,
-//            COALESCE(m.value::TEXT, 'No Grade') AS Grade
-//     FROM people p
-//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
-//     WHERE p.group_id = :groupId AND p.type = 'S'
-//     ORDER BY p.first_name
-// )");
-//     query.bindValue(":groupId", groupId.toInt());
-//     query.bindValue(":subjectId", subjectId.toInt());
-
-//     // Execute the query and set it to the model
-//     if (!query.exec()) {
-//         QMessageBox::warning(this, "Database Error", query.lastError().text());
-//         return;
-//     }
-
-//     model->setQuery(query);
-
-
-//     // Set headers for better readability
-//     model->setHeaderData(0, Qt::Horizontal, "Student ID");
-//     model->setHeaderData(1, Qt::Horizontal, "Student Name");
-//     model->setHeaderData(2, Qt::Horizontal, "Grade");
-
-//     // Assign the model to the QTableView
-//     ui->tableViewMark->setModel(model);
-
-//     // Resize columns to fit their contents
-//     ui->tableViewMark->resizeColumnsToContents();
-
-//     // Optional: Stretch the last column to fill available space
-//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-
-
-
-
-// }
-
-
-// void mainApplication::on_pushButton_MarkView_clicked()
-// {
-//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
-//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
-
-//     if (!groupId.isValid() || !subjectId.isValid()) {
-//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
-//         return;
-//     }
-
-//     modeldb& db = modeldb::getInstance();
-
-//     // Create a QSqlQueryModel
-//     QSqlQueryModel *model = new QSqlQueryModel(this);
-
-//     // Set the query
-//     QSqlQuery query(db.getDatabase());
-//     query.prepare(R"(
-//     SELECT p.id AS Student_ID,
-//            p.first_name || ' ' || p.last_name AS Student_Name,
-//            COALESCE(m.value::TEXT, 'No Grade') AS Grade
-//     FROM people p
-//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
-//     WHERE p.group_id = :groupId AND p.type = 'S'
-//     ORDER BY p.first_name
-// )");
-//     query.bindValue(":groupId", groupId.toInt());
-//     query.bindValue(":subjectId", subjectId.toInt());
-
-//     if (!query.exec()) {
-//         QMessageBox::warning(this, "Database Error", query.lastError().text());
-//         return;
-//     }
-
-//     model->setQuery(query);
-
-//     // Set headers for better readability
-//     model->setHeaderData(0, Qt::Horizontal, "Student ID");
-//     model->setHeaderData(1, Qt::Horizontal, "Student Name");
-//     model->setHeaderData(2, Qt::Horizontal, "Grade");
-
-//     // Assign the model to the QTableView
-//     ui->tableViewMark->setModel(model);
-
-//     // Enable editing only for the "Grade" column
-//     //ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
-
-//     // Resize columns
-//     ui->tableViewMark->resizeColumnsToContents();
-//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-//     // Save subjectId for editing logic
-//     ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
-// }
-
-
-
-
-
-// void mainApplication::on_pushButton_MarkSave_clicked()
-// {
-//     modeldb& db = modeldb::getInstance();
-
-//     // Get the model from the table view
-//     QSqlTableModel *model = qobject_cast<QSqlTableModel *>(ui->tableViewMark->model());
-//     if (!model) {
-//         QMessageBox::warning(this, "Error", "Failed to retrieve the model for grades.");
-//         return;
-//     }
-
-//     // Submit all changes to the database
-//     if (!model->submitAll()) {
-//         QMessageBox::warning(this, "Database Error", "Failed to save changes: " + model->lastError().text());
-//         return;
-//     }
-
-//     QMessageBox::information(this, "Success", "Grades saved successfully.");
-//     // Optional: Refresh the view after saving
-//     model->select();
-// }
-
-
-//////
-// void mainApplication::on_pushButton_MarkView_clicked()
-// {
-//     QVariant groupId = ui->comboBox_MarkSelectGroup->currentData();
-//     QVariant subjectId = ui->comboBox_MarkSelectSubject->currentData();
-//     if (!groupId.isValid() || !subjectId.isValid()) {
-//         QMessageBox::warning(this, "Input Error", "Please select both a valid group and a subject.");
-//         return;
-//     }
-
-//     modeldb& db = modeldb::getInstance();
-
-//     // Use QStandardItemModel instead of QSqlQueryModel
-//     QStandardItemModel *model = new QStandardItemModel(this);
-
-//     // Prepare the query
-//     QSqlQuery query(db.getDatabase());
-//     query.prepare(R"(
-//     SELECT p.id AS Student_ID,
-//            p.first_name || ' ' || p.last_name AS Student_Name,
-//            COALESCE(m.value::TEXT, 'No Grade') AS Grade,
-//            m.id AS Mark_ID
-//     FROM people p
-//     LEFT JOIN marks m ON p.id = m.student_id AND m.subject_id = :subjectId
-//     WHERE p.group_id = :groupId AND p.type = 'S'
-//     ORDER BY p.first_name
-// )");
-//     query.bindValue(":groupId", groupId.toInt());
-//     query.bindValue(":subjectId", subjectId.toInt());
-
-//     if (!query.exec()) {
-//         QMessageBox::warning(this, "Database Error", query.lastError().text());
-//         return;
-//     }
-
-//     // Set up model headers
-//     model->setColumnCount(4);
-//     model->setHorizontalHeaderLabels({"Student ID", "Student Name", "Grade", "Mark ID"});
-
-//     // Populate the model
-//     while (query.next()) {
-//         QList<QStandardItem*> row;
-
-//         // Student ID (not editable)
-//         QStandardItem* studentIdItem = new QStandardItem(query.value(0).toString());
-//         studentIdItem->setEditable(false);
-//         row.append(studentIdItem);
-
-//         // Student Name (not editable)
-//         QStandardItem* studentNameItem = new QStandardItem(query.value(1).toString());
-//         studentNameItem->setEditable(false);
-//         row.append(studentNameItem);
-
-//         // Grade (editable)
-//         QStandardItem* gradeItem = new QStandardItem(query.value(2).toString());
-//         gradeItem->setEditable(true);
-//         row.append(gradeItem);
-
-//         // Mark ID (hidden)
-//         QStandardItem* markIdItem = new QStandardItem(query.value(3).toString());
-//         markIdItem->setEditable(false);
-//         row.append(markIdItem);
-
-//         model->appendRow(row);
-//     }
-
-//     // Set the model
-//     ui->tableViewMark->setModel(model);
-
-//     // Hide the Mark ID column
-//     ui->tableViewMark->setColumnHidden(3, true);
-
-//     // Configure edit triggers
-//     ui->tableViewMark->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
-
-//     // Resize columns
-//     ui->tableViewMark->resizeColumnsToContents();
-//     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-//     // Store subject ID as a property
-//     ui->tableViewMark->setProperty("subjectId", subjectId.toInt());
-// }
 
 void mainApplication::on_pushButton_MarkView_clicked()
 {
-    // modeldb& db = modeldb::getInstance();
-    // // Create a QSqlTableModel to display and edit the results in the QTableView
-    // QSqlTableModel *model = new QSqlTableModel(this, db.getDatabase());
-    // model->setTable("marks");
-    // model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    // model->select();
-
-    // // Set headers for better readability
-    // model->setHeaderData(0, Qt::Horizontal, "Student ID");
-    // model->setHeaderData(1, Qt::Horizontal, "Student Name");
-    // model->setHeaderData(2, Qt::Horizontal, "Subject");
-    // model->setHeaderData(3, Qt::Horizontal, "Mark");
-
-    // // Assign the model to the QTableView
-    // ui->tableViewMark->setModel(model);
-
-    // // Resize columns to fit their contents
-    // ui->tableViewMark->resizeColumnsToContents();
-
-    // // Optional: Stretch the last column to fill available space
-    // ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    // // Disable editing initially
-    // ui->tableViewMark->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
 
     modeldb& db = modeldb::getInstance();
     // Create a QSqlQueryModel to display and edit the results in the QTableView
     QSqlQueryModel *model = new QSqlQueryModel(this);
 
-    // Prepare a custom query to join the "marks" and "people" tables to get student names
     QSqlQuery query(db.getDatabase());
     query.prepare(R"(
         SELECT m.id AS Mark_ID,
@@ -1911,25 +1536,19 @@ void mainApplication::on_pushButton_MarkView_clicked()
         return;
     }
 
-    // Set the query result to the model
     model->setQuery(query);
 
-    // Set headers for better readability
     model->setHeaderData(0, Qt::Horizontal, "Mark ID");
     model->setHeaderData(1, Qt::Horizontal, "Student Name");
     model->setHeaderData(2, Qt::Horizontal, "Subject");
     model->setHeaderData(3, Qt::Horizontal, "Mark");
 
-    // Assign the model to the QTableView
     ui->tableViewMark->setModel(model);
 
-    // Resize columns to fit their contents
     ui->tableViewMark->resizeColumnsToContents();
 
-    // Optional: Stretch the last column to fill available space
     ui->tableViewMark->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Disable editing initially
     ui->tableViewMark->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
@@ -1977,69 +1596,6 @@ void mainApplication::on_MA_tabWidget_Main_tabBarClicked(int index)
     ui->lineEdit_PL_username->setPlaceholderText("password");
 
 }
-
-
-// void mainApplication::on_pushButton_AddLogin_clicked()
-// {
-//     // Get the selected student name from the ComboBox
-//     QString studentName = ui->comboBox_PL_StudentChoose->currentText();
-//     QString username = ui->lineEdit_PL_username->text();
-//     QString plainPassword = ui->lineEdit_PL_password->text();
-
-//     // Validate inputs
-//     if (studentName.isEmpty() || username.isEmpty() || plainPassword.isEmpty()) {
-//         QMessageBox::warning(this, "Input Error", "Please fill in all fields.");
-//         return;
-//     }
-
-//     // Retrieve the student_id based on the selected student name
-//     QSqlQuery query;
-//     query.prepare("SELECT id FROM people WHERE CONCAT(first_name, ' ', last_name) = :studentName AND type = 'S'");
-//     query.bindValue(":studentName", studentName);
-
-//     if (!query.exec() || !query.next()) {
-//         QMessageBox::critical(this, "Database Error", "Failed to retrieve student ID: " + query.lastError().text());
-//         return;
-//     }
-
-//     int studentId = query.value("id").toInt();
-
-//     // Check if the user already exists in the auth_users table
-//     query.prepare("SELECT COUNT(*) FROM auth_users WHERE student_id = :student_id");
-//     query.bindValue(":student_id", studentId);
-
-//     if (!query.exec() || !query.next()) {
-//         QMessageBox::critical(this, "Database Error", "Failed to check existing user: " + query.lastError().text());
-//         return;
-//     }
-
-//     if (query.value(0).toInt() > 0) {
-//         QMessageBox::warning(this, "Duplicate Entry", "Login credentials already exist for this student.");
-//         return;
-//     }
-
-//     // Hash the password using QCryptographicHash
-//     QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
-
-//     // Insert the new login credentials into the database
-//     query.prepare("INSERT INTO auth_users (student_id, username, password_hash, role) "
-//                   "VALUES (:student_id, :username, :password_hash, 'Student')");
-//     query.bindValue(":student_id", studentId);
-//     query.bindValue(":username", username);
-//     query.bindValue(":password_hash", passwordHash.toHex()); // Store the hashed password as a hex string
-
-//     if (!query.exec()) {
-//         QMessageBox::critical(this, "Database Error", "Failed to add the student's login credentials: " + query.lastError().text());
-//         return;
-//     }
-
-//     // Success feedback
-//     QMessageBox::information(this, "Success", "Login credentials added successfully!");
-
-//     // Clear the input fields
-//     ui->lineEdit_PL_username->clear();
-//     ui->lineEdit_PL_password->clear();
-// }
 
 
 void mainApplication::on_pushButton_AddLogin_clicked()
