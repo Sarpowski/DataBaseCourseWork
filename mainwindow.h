@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCryptographicHash>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,13 +17,20 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString  hashPassword(const QString &plainPassword);
+    void navigateToRoleScreen(const QString &role);
 
+    void setUserId(int userId);
+    int getUserId();
+
+    void loadMarks(int studentId);
 private slots:
     void on_pushButtonLogin_clicked();
 
 private:
     Ui::MainWindow *ui;
     void mainWindowInit();
+    int userId_;
 
 };
 #endif // MAINWINDOW_H

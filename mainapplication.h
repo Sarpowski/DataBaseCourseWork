@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <qcombobox.h>
+#include <QCryptographicHash>
 
 
 
@@ -32,15 +33,21 @@ public:
     void loadSubject();
     void loadGrades();
     void loadSubjectsWithTeachers();
-    void exportToCsv();
-    void exportToPdf();
+    void exportToCsv(QString type);
+    void exportToPdf(QString type);
     void exportData();
+
+
+
+
+    //hash password using SHA-256
+    QString hashPassword(const QString &plainPassword);
 
     void saveOrUpdateMark(int studentId, int subjectId, int teacherId, int mark);
     void loadComboBoxSubjects(QComboBox* comboBox, int studentId);
     void loadComboBoxMarks(QComboBox* comboBox);
     void loadComboBoxStudents(QComboBox* comboBox, int groupId);
-
+    void loadComboBoxStudents(QComboBox* comboBox);
     void loadComboBoxGroupForMark(QComboBox* comboBox, const QString& placeholderText = "Select a Group");
 
     void loadComboBoxSubjectsForMark();
@@ -91,6 +98,13 @@ private slots:
     void on_comboBox_EditMarkSelectStudent_currentIndexChanged(int index);
 
     void on_comboBox_EditMarkChooseSubject_2_currentIndexChanged(int index);
+
+    void on_MA_tabWidget_Main_tabBarClicked(int index);
+
+    void on_pushButton_AddLogin_clicked();
+
+
+    void on_pushButton_AddConfig_clicked();
 
 private:
     bool firstRun_ ;

@@ -2,25 +2,42 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-
+#include "modeldb.h"
 
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <qfiledialog.h>
 
 
 void connectToDatabase();
+QString init()
 
+{
+    QString targetFilePath = "C:\\Users\\Can\\Desktop\\dataBaseCourseWork\\CourseWorkDB\\build\\Desktop_Qt_6_8_0_MinGW_64_bit-Debug\\main.ini"; ;
+    return targetFilePath;
+}
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QString configFilePath = init();
+
+
+    // Initialize the database with the selected configuration file
+    modeldb& dbInstance = modeldb::getInstance();
+    dbInstance.initDb(configFilePath);
+
+
+
+   // modeldb &dbInstance = modeldb::getInstance();
+
 
     //Login Screen
    // MainWindow w;
-   // w.show();
+    //w.show();
 
     //Application Screen
     mainApplication *mainWindow = new mainApplication;
@@ -28,6 +45,7 @@ int main(int argc, char *argv[])
 
     //DataBase Test
     connectToDatabase();
+
     return a.exec();
 }
 void connectToDatabase() {
